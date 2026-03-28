@@ -1397,8 +1397,10 @@
               <button class="btn btn-primary" onclick="saveGistConfig()">Save & Connect</button>
               <button class="btn" onclick="manualSync()">Sync Now</button>
               <button class="btn" onclick="testGistConnection()">Test Connection</button>
+              <button class="btn" onclick="diagnoseSyncIssue()" style="border-color:var(--gold);color:var(--gold)">Diagnose</button>
               <span id="gist-status-text" class="gist-disconnected"></span>
               <span id="last-synced-text" style="font-size:12px;color:var(--text-muted);margin-left:auto"></span>
+              <div id="diag-output" style="display:none;width:100%;margin-top:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:'DM Mono',monospace;font-size:12px;line-height:1.9;white-space:pre-wrap"></div>
             </div>
           </div>
           <div class="accordion-row">
@@ -3855,6 +3857,106 @@ function toggleAccordion(id) {
   if (!content) return;
   const open = content.classList.toggle('open');
   if (icon) icon.textContent = open ? '▲' : '▼';
+}
+
+async function diagnoseSyncIssue() {
+  const out = document.getElementById('diag-output');
+  out.style.display = 'block';
+  out.textContent = 'Running diagnostics…\n';
+
+  const log = (icon, msg) => { out.textContent += `${icon}  ${msg}\n`; };
+
+  // 1. Check credentials stored
+  const { token, gistId } = getSyncCreds();
+  log(token ? '✅' : '❌', `Token saved: ${token ? token.slice(0,8) + '…' + token.slice(-4) + ` (${token.length} chars)` : 'MISSING'}`);
+  log(gistId ? '✅' : '❌', `Gist ID saved: ${gistId ? gistId.slice(0,6) + '…' + gistId.slice(-4) + ` (${gistId.length} chars)` : 'MISSING'}`);
+
+  if (!token) { log('🛑', 'No token — paste your ghp_... token and click Save & Connect'); return; }
+  if (!gistId) { log('🛑', 'No Gist ID — paste your Gist ID and click Save & Connect'); return; }
+
+  // 2. Token format check
+  if (token.startsWith('github_pat_')) {
+    log('❌', 'Token is fine-grained (github_pat_...) — must use classic token (ghp_...)');
+    log('🛑', 'Go to GitHub → Settings → Developer settings → Tokens (classic) → generate new');
+    return;
+  }
+  if (!token.startsWith('ghp_')) {
+    log('⚠️', `Token starts with "${token.slice(0,6)}" — expected "ghp_" for classic token`);
+  } else {
+    log('✅', 'Token format looks correct (ghp_...)');
+  }
+
+  // 3. Gist ID format check
+  if (gistId.length < 20) {
+    log('❌', `Gist ID is only ${gistId.length} chars — should be ~32. Did you copy the full ID?`);
+    return;
+  }
+  if (gistId.includes('github.com') || gistId.includes('/')) {
+    log('❌', 'Gist ID contains a URL — paste only the ID part, not the full URL');
+    return;
+  }
+  log('✅', `Gist ID length OK (${gistId.length} chars)`);
+
+  // 4. Check GitHub API reachable at all
+  log('⏳', 'Testing GitHub API reachability…');
+  try {
+    const zenRes = await fetch('https://api.github.com/zen');
+    log('✅', `GitHub API reachable (HTTP ${zenRes.status})`);
+  } catch(e) {
+    log('❌', 'Cannot reach api.github.com — network blocked or no internet');
+    log('🛑', 'Check your internet connection');
+    return;
+  }
+
+  // 5. Test token with user endpoint
+  log('⏳', 'Validating token…');
+  try {
+    const userRes = await fetch('https://api.github.com/user', {
+      headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if (userRes.status === 401) {
+      log('❌', 'Token rejected (401) — token is invalid, expired, or copied incorrectly');
+      log('🛑', 'Generate a new classic token and paste it again');
+      return;
+    }
+    if (userRes.ok) {
+      const user = await userRes.json();
+      log('✅', `Token valid — authenticated as: ${user.login}`);
+    }
+  } catch(e) {
+    log('❌', 'Token validation fetch failed: ' + e.message);
+    return;
+  }
+
+  // 6. Test Gist access
+  log('⏳', 'Accessing Gist…');
+  try {
+    const gistRes = await fetch(`https://api.github.com/gists/${gistId}`, {
+      headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if (gistRes.status === 404) {
+      log('❌', 'Gist not found (404) — check Gist ID is correct');
+      return;
+    }
+    if (gistRes.status === 403) {
+      log('❌', 'Access denied (403) — token may not have gist scope');
+      return;
+    }
+    if (!gistRes.ok) {
+      log('❌', `Gist fetch failed: HTTP ${gistRes.status}`);
+      return;
+    }
+    const gist = await gistRes.json();
+    const files = Object.keys(gist.files).join(', ');
+    log('✅', `Gist accessible — files inside: ${files || '(empty)'}`);
+    const hasFile = !!(gist.files['shantracks_data.json'] || gist.files['fintrack_data.json']);
+    log(hasFile ? '✅' : '⚠️', hasFile ? 'Data file found in Gist — ready to sync!' : 'Data file missing — click Test Connection to create it');
+  } catch(e) {
+    log('❌', 'Gist access failed: ' + e.message);
+    return;
+  }
+
+  log('🎉', 'All checks passed — try Sync Now');
 }
 
 async function testGistConnection() {
