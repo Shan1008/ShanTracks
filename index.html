@@ -1948,7 +1948,7 @@ async function pushToGist(data) {
         'Accept': 'application/vnd.github.v3+json'
       },
       body: JSON.stringify({
-        files: { 'fintrack_data.json': { content: JSON.stringify(data, null, 2) } }
+        files: { 'shantracks_data.json': { content: JSON.stringify(data, null, 2) } }
       })
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -1976,7 +1976,8 @@ async function pullFromGist() {
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const gist = await res.json();
-    const file = gist.files['fintrack_data.json'];
+    // Support both old and new filename
+    const file = gist.files['shantracks_data.json'] || gist.files['fintrack_data.json'];
     if (!file) return null;
     return JSON.parse(file.content);
   } catch(e) {
@@ -3860,14 +3861,25 @@ async function testGistConnection() {
     const res = await fetch(`https://api.github.com/gists/${gistId}`, {
       headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
     });
-    if (res.ok) {
-      setSyncStatus('ok', 'Connected');
-      showToast('Connection successful!', 'success');
-      const el = document.getElementById('gist-status-text');
-      if (el) { el.textContent = '● Connected'; el.className = 'gist-connected'; }
+    if (!res.ok) throw new Error(`HTTP ${res.status} — check your token and Gist ID`);
+    const gist = await res.json();
+    const hasFile = !!(gist.files['shantracks_data.json'] || gist.files['fintrack_data.json']);
+
+    if (!hasFile) {
+      // First-time setup: create the file inside the Gist automatically
+      const init = await fetch(`https://api.github.com/gists/${gistId}`, {
+        method: 'PATCH',
+        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' },
+        body: JSON.stringify({ files: { 'shantracks_data.json': { content: JSON.stringify({}) } } })
+      });
+      if (!init.ok) throw new Error(`Could not initialise Gist file (HTTP ${init.status})`);
+      showToast('Gist initialised — data file created!', 'success');
     } else {
-      throw new Error(`HTTP ${res.status}`);
+      showToast('Connection successful!', 'success');
     }
+    setSyncStatus('ok', 'Connected');
+    const el = document.getElementById('gist-status-text');
+    if (el) { el.textContent = '● Connected'; el.className = 'gist-connected'; }
   } catch(e) {
     setSyncStatus('error', 'Failed');
     showToast('Connection failed: ' + e.message, 'error');
@@ -3971,3 +3983,4 @@ init();
 </script>
 </body>
 </html>
+
