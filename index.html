@@ -1951,6 +1951,9 @@ async function pushToGist(data) {
         files: { 'shantracks_data.json': { content: JSON.stringify(data, null, 2) } }
       })
     });
+    if (res.status === 401) throw new Error('Token invalid or expired — create a new classic token (ghp_...)');
+    if (res.status === 404) throw new Error('Gist not found — check your Gist ID');
+    if (res.status === 403) throw new Error('Token lacks gist scope — regenerate with "gist" scope checked');
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const ts = new Date().toLocaleTimeString('en-IN');
     localStorage.setItem(LS_SYNCED, ts);
@@ -1958,8 +1961,9 @@ async function pushToGist(data) {
     syncPending = false;
     return true;
   } catch(e) {
+    const msg = e.message.includes('fetch') ? 'Network error — check internet, or token type must be classic (ghp_...)' : e.message;
     setSyncStatus('error', 'Sync failed');
-    showToast('Sync failed: ' + e.message, 'error');
+    showToast('Sync failed: ' + msg, 'error');
     return false;
   }
 }
@@ -3861,7 +3865,10 @@ async function testGistConnection() {
     const res = await fetch(`https://api.github.com/gists/${gistId}`, {
       headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status} — check your token and Gist ID`);
+    if (res.status === 401) throw new Error('Token invalid or expired — create a new classic token (ghp_...)');
+    if (res.status === 404) throw new Error('Gist not found — double-check your Gist ID');
+    if (res.status === 403) throw new Error('Token lacks gist scope — regenerate with "gist" scope');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const gist = await res.json();
     const hasFile = !!(gist.files['shantracks_data.json'] || gist.files['fintrack_data.json']);
 
@@ -3872,17 +3879,20 @@ async function testGistConnection() {
         headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' },
         body: JSON.stringify({ files: { 'shantracks_data.json': { content: JSON.stringify({}) } } })
       });
+      if (init.status === 401) throw new Error('Token invalid — use a classic token starting with ghp_');
+      if (init.status === 403) throw new Error('Token missing gist scope — regenerate token with gist scope checked');
       if (!init.ok) throw new Error(`Could not initialise Gist file (HTTP ${init.status})`);
-      showToast('Gist initialised — data file created!', 'success');
+      showToast('Gist initialised — data file created! Now click Sync Now.', 'success');
     } else {
-      showToast('Connection successful!', 'success');
+      showToast('Connection successful! Click Sync Now to push your data.', 'success');
     }
     setSyncStatus('ok', 'Connected');
     const el = document.getElementById('gist-status-text');
     if (el) { el.textContent = '● Connected'; el.className = 'gist-connected'; }
   } catch(e) {
     setSyncStatus('error', 'Failed');
-    showToast('Connection failed: ' + e.message, 'error');
+    const msg = e.message.includes('fetch') ? 'Network blocked — open the app from your GitHub Pages URL, not a local file' : e.message;
+    showToast('Connection failed: ' + msg, 'error');
   }
 }
 
@@ -3983,4 +3993,3 @@ init();
 </script>
 </body>
 </html>
-
