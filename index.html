@@ -1255,9 +1255,9 @@
     <div id="register-view" style="display:none">
       <div class="login-field-group">
         <label class="login-field-label">Choose a User ID</label>
-        <input class="login-field-input" id="reg-uid" type="text" placeholder="e.g. shan123"
+        <input class="login-field-input" id="reg-uid" type="text" placeholder="e.g. shanmugam123"
           autocomplete="off" spellcheck="false" maxlength="24" oninput="regClearError()" />
-        <div class="login-field-hint">Only letters, numbers, underscore. Min 3 chars.</div>
+        <div class="login-field-hint">Letters, numbers, underscore, @. Min 3 chars.</div>
       </div>
       <div class="login-field-label" id="reg-pin-label" style="margin-bottom:8px">Create a PIN (4–6 digits)</div>
       <div class="pin-dots" id="reg-dots"></div>
@@ -1979,7 +1979,7 @@ async function rSubmit() {
     if (regStep === 'pin') {
       const uid_val = document.getElementById('reg-uid').value.trim();
       if (!uid_val || uid_val.length < 3)          { errEl.textContent = 'User ID must be at least 3 characters'; return; }
-      if (!/^[a-zA-Z0-9_]+$/.test(uid_val))        { errEl.textContent = 'Only letters, numbers, underscore allowed'; return; }
+      if (!/^[a-zA-Z0-9_@]+$/.test(uid_val))        { errEl.textContent = 'Only letters, numbers, underscore, @ allowed'; return; }
       if (regBuf.length < 4)                        { errEl.textContent = 'PIN must be at least 4 digits'; return; }
       const users = loadUsers();
       if (users.find(u => u.userId && u.userId.toLowerCase() === uid_val.toLowerCase())) {
@@ -2176,6 +2176,16 @@ let pinLocked = false;
 let pinLockoutEnd = 0;
 let pinMode = 'enter'; // 'create' | 'confirm' | 'enter' | 'change-old' | 'change-new' | 'change-confirm'
 
+// Save pinHash to both user registry (primary) and legacy LS_PIN key (fallback)
+function savePinHash(hash) {
+  localStorage.setItem(LS_PIN, hash);
+  if (currentUserId) {
+    const users = loadUsers();
+    const idx   = users.findIndex(u => u.id === currentUserId);
+    if (idx >= 0) { users[idx].pinHash = hash; saveUsers(users); }
+  }
+}
+
 async function sha256(str) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
@@ -2216,7 +2226,10 @@ async function pinConfirm() {
     document.getElementById('pin-error').textContent = 'PIN must be 4–6 digits';
     return;
   }
-  const stored = localStorage.getItem(LS_PIN);
+  // Always read pinHash from user registry (LS_PIN legacy key is unreliable for multi-user)
+  const _users  = loadUsers();
+  const _me     = currentUserId ? _users.find(u => u.id === currentUserId) : null;
+  const stored  = _me ? _me.pinHash : localStorage.getItem(LS_PIN);
 
   if (pinMode === 'create') {
     pinCreateFirst = pinBuffer;
@@ -2240,7 +2253,7 @@ async function pinConfirm() {
       return;
     }
     const hash = await sha256(pinBuffer);
-    localStorage.setItem(LS_PIN, hash);
+    savePinHash(hash);
     pinBuffer = '';
     pinMode = 'enter';
     unlockApp();
@@ -2284,7 +2297,7 @@ async function pinConfirm() {
       return;
     }
     const hash = await sha256(pinBuffer);
-    localStorage.setItem(LS_PIN, hash);
+    savePinHash(hash);
     pinBuffer = '';
     pinMode = 'enter';
     unlockApp();
@@ -2375,9 +2388,28 @@ function lockApp() {
   document.getElementById('pin-overlay').style.display = 'flex';
   pinMode = 'enter';
   pinBuffer = '';
-  document.getElementById('pin-label').textContent = 'Enter PIN';
   document.getElementById('pin-error').textContent = '';
   renderPinDots(0, 6, false);
+  // Show current user in lock screen
+  const badge = document.getElementById('pin-user-badge');
+  if (currentUserId && badge) {
+    const users = loadUsers();
+    const me = users.find(u => u.id === currentUserId);
+    if (me) {
+      badge.style.display = 'flex';
+      badge.innerHTML = `
+        <div style="width:38px;height:38px;border-radius:50%;background:${me.color||'#7C6FFF'};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">${getUserInitials(me.userId)}</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text)">${me.userId}</div>
+          <div style="font-size:11px;color:var(--text-muted)">Enter PIN to unlock</div>
+        </div>`;
+      document.getElementById('pin-label').textContent = 'PIN';
+      document.getElementById('pin-subtitle').textContent = '';
+    } else {
+      badge.style.display = 'none';
+      document.getElementById('pin-label').textContent = 'Enter PIN';
+    }
+  }
 }
 
 function changePIN() {
@@ -2560,11 +2592,20 @@ async function pullAndMerge() {
   setSyncStatus('syncing', 'Pulling…');
   const result = await pullFromGist();
   if (result && result.data) {
-    const remote = result.data;
-    const localTs  = appData.lastUpdated  ? new Date(appData.lastUpdated).getTime()  : 0;
-    const remoteTs = remote.lastUpdated   ? new Date(remote.lastUpdated).getTime()   : 0;
+    // Safety check: only accept data that belongs to this user
+    if (result._meta && result._meta.userId) {
+      const users = loadUsers();
+      const me    = users.find(u => u.id === currentUserId);
+      if (me && result._meta.userId.toLowerCase() !== me.userId.toLowerCase()) {
+        setSyncStatus('error', 'Gist belongs to a different user');
+        showToast(`Gist belongs to "${result._meta.userId}" — not syncing`, 'error');
+        return;
+      }
+    }
+    const remote   = result.data;
+    const localTs  = appData.lastUpdated ? new Date(appData.lastUpdated).getTime() : 0;
+    const remoteTs = remote.lastUpdated  ? new Date(remote.lastUpdated).getTime()  : 0;
     if (remoteTs > localTs) {
-      // Use blankData() as base so no stale sample data leaks in
       appData = Object.assign(blankData(), remote);
       saveData(true);
       renderAll();
@@ -4752,11 +4793,37 @@ function migrateOldData() {
   ['fin_data','fin_pin','fin_gh_token','fin_gist_id','fin_last_synced'].forEach(k => localStorage.removeItem(k));
 }
 
-function init() {
+async function ensureAdminUser() {
+  const ADMIN_USERID = 'Shan@280';
+  const ADMIN_PIN    = '787898';
+  const users   = loadUsers();
+  const exists  = users.find(u => u.userId === ADMIN_USERID);
+  if (exists) {
+    // Ensure admin flag is set even if migrated from old data
+    if (!exists.isAdmin) { exists.isAdmin = true; saveUsers(users); }
+    return;
+  }
+  const hash    = await sha256(ADMIN_PIN);
+  const adminUser = {
+    id: uid(), userId: ADMIN_USERID, pinHash: hash,
+    color: '#F59E0B', isAdmin: true,
+    createdAt: new Date().toISOString()
+  };
+  users.unshift(adminUser); // always first
+  saveUsers(users);
+  // Pre-create blank data for admin (no sample data)
+  localStorage.setItem(`st_data_${adminUser.id}`, JSON.stringify(blankData()));
+}
+
+async function init() {
   migrateOldData();
   initExpensesTab();
-  // Always start with login screen
+  // Hide pin-overlay immediately so it never flashes
   document.getElementById('pin-overlay').style.display = 'none';
+  document.getElementById('login-overlay').style.display = 'none';
+  // Ensure admin exists BEFORE showing login — sha256 takes <5ms, user won't notice
+  try { await ensureAdminUser(); } catch(e) { console.warn('Admin setup error:', e); }
+  // Now show login
   document.getElementById('login-overlay').style.display = 'flex';
   showLoginView();
 }
