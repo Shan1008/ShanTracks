@@ -147,6 +147,101 @@
   }
   .mono { font-family: 'DM Mono', monospace; }
 
+  /* ── LOGIN OVERLAY ── */
+  #login-overlay {
+    position: fixed; inset: 0; z-index: 10000;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .login-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 24px; padding: 40px 36px; width: 360px;
+    text-align: center;
+  }
+  .login-app-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 28px; }
+  .login-field-group { text-align: left; margin-bottom: 18px; }
+  .login-field-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 7px; display: block; }
+  .login-field-input {
+    width: 100%; padding: 11px 14px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--bg);
+    color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px;
+    outline: none; transition: border-color 0.15s;
+  }
+  .login-field-input:focus { border-color: var(--accent); }
+  .login-field-hint { font-size: 11px; color: var(--text-muted); margin-top: 5px; }
+  .login-footer { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 20px; flex-wrap: wrap; }
+  .login-footer-text { font-size: 13px; color: var(--text-muted); }
+  .login-link-btn { background: none; border: none; color: var(--accent); font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; padding: 0; }
+  .login-link-btn:hover { text-decoration: underline; }
+  .login-divider { color: var(--border); font-size: 12px; }
+  .restore-field-group { margin-bottom: 14px; }
+  .restore-input { width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 13px; font-family: 'DM Mono', monospace; box-sizing: border-box; outline: none; }
+  .restore-input:focus { border-color: var(--accent); }
+  .restore-btn { width: 100%; padding: 12px; border-radius: 12px; background: var(--accent); border: none; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 4px; }
+  .restore-btn:hover { opacity: .85; }
+  .restore-error { font-size: 12px; color: var(--red); text-align: center; margin-top: 8px; min-height: 18px; }
+
+  /* ── USER SELECT OVERLAY (kept for legacy, hidden) ── */
+  #user-select-overlay {
+    position: fixed; inset: 0; z-index: 10000;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .user-select-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 24px; padding: 40px 36px; width: 400px;
+    text-align: center; max-height: 90vh; overflow-y: auto;
+  }
+  .user-select-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 28px; }
+  .user-cards { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  .user-card {
+    display: flex; align-items: center; gap: 14px;
+    padding: 13px 16px; border-radius: 14px;
+    background: var(--bg); border: 1px solid var(--border);
+    cursor: pointer; text-align: left; transition: all 0.15s;
+  }
+  .user-card:hover { border-color: var(--accent); background: rgba(124,111,255,0.06); }
+  .user-avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; font-weight: 700; color: #fff; flex-shrink: 0;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .user-card-info { flex: 1; }
+  .user-card-name { font-size: 15px; font-weight: 600; color: var(--text); }
+  .user-card-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .user-card-del {
+    background: transparent; border: none; color: var(--text-muted);
+    font-size: 16px; cursor: pointer; padding: 4px 8px; border-radius: 6px;
+    transition: all 0.12s; opacity: 0;
+  }
+  .user-card:hover .user-card-del { opacity: 1; }
+  .user-card-del:hover { color: var(--red); background: rgba(239,68,68,0.08); }
+  .user-select-new { margin-top: 4px; }
+  .user-name-form { display: none; flex-direction: column; gap: 12px; margin-bottom: 20px; text-align: left; }
+  .user-name-form.visible { display: flex; }
+  /* PIN overlay user badge */
+  .pin-user-badge {
+    display: flex; align-items: center; gap: 10px; justify-content: center;
+    margin-bottom: 18px;
+  }
+  .pin-user-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: #fff;
+  }
+  .pin-user-name { font-size: 15px; font-weight: 600; color: var(--text); }
+  /* Nav user chip */
+  .nav-user-chip {
+    display: flex; align-items: center; gap: 8px;
+    padding: 4px 10px 4px 5px; border-radius: 20px;
+    background: rgba(124,111,255,0.08); border: 1px solid var(--border);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .nav-user-chip:hover { border-color: var(--accent); }
+  .nav-user-avatar { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; }
+  .nav-user-name { font-size: 12px; font-weight: 600; color: var(--text); }
+
   /* ── PIN OVERLAY ── */
   #pin-overlay {
     position: fixed; inset: 0; z-index: 9999;
@@ -946,6 +1041,12 @@
   .gold-d-inp:focus { background: rgba(124,111,255,0.08); border: 1px solid var(--accent); }
   .gold-table-summary { display: flex; justify-content: space-between; padding: 5px 7px; background: rgba(245,158,11,0.06); border-radius: 6px; font-size: 11px; margin-top: 2px; }
   .gold-table-summary span { font-family: 'DM Mono', monospace; color: var(--gold); font-weight: 600; }
+  .gold-nw-cb { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; }
+  .gold-nw-badge { display: inline-block; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 4px; margin-left: 3px; vertical-align: middle; }
+  .gold-nw-badge.in  { background: rgba(16,185,129,.15); color: #10B981; border: 1px solid rgba(16,185,129,.3); }
+  .gold-nw-badge.out { background: rgba(100,100,120,.12); color: var(--text-muted); border: 1px solid var(--border); }
+  .gold-row-excluded td { opacity: 0.45; }
+  .gold-row-excluded .gold-nw-cb-cell { opacity: 1; }
 
   /* Settings v2 */
   .settings-grid-v2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -991,14 +1092,195 @@
     .gold-owner-col:last-child { border-bottom: none; }
     .settings-grid-v2 { grid-template-columns: 1fr; }
   }
+
+  /* ── ADMIN PANEL ── */
+  .admin-btn {
+    display: none;
+    align-items: center; gap: 5px;
+    padding: 5px 12px; border-radius: 8px;
+    background: linear-gradient(135deg, #F59E0B22, #F59E0B44);
+    border: 1px solid #F59E0B66;
+    color: #F59E0B; font-size: 11px; font-weight: 700;
+    cursor: pointer; text-transform: uppercase; letter-spacing: .5px;
+    transition: all .2s;
+  }
+  .admin-btn:hover { background: linear-gradient(135deg, #F59E0B44, #F59E0B66); border-color: #F59E0B; }
+  .admin-btn.visible { display: flex; }
+
+  #admin-overlay {
+    display: none; position: fixed; inset: 0; z-index: 3000;
+    background: rgba(0,0,0,.75); backdrop-filter: blur(8px);
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  #admin-overlay.open { display: flex; }
+  .admin-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; padding: 30px; width: 100%; max-width: 580px;
+    max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 24px 64px rgba(0,0,0,.6);
+  }
+  .admin-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .admin-title { font-size: 18px; font-weight: 700; color: #F59E0B; }
+  .admin-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .admin-close { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; padding: 4px 8px; border-radius: 8px; }
+  .admin-close:hover { color: var(--text); background: var(--border); }
+
+  .admin-stats {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 24px;
+  }
+  .admin-stat-card {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; text-align: center;
+  }
+  .admin-stat-val { font-size: 22px; font-weight: 700; color: var(--accent); }
+  .admin-stat-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  .admin-section-title {
+    font-size: 11px; font-weight: 700; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
+  }
+  .admin-user-row {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 16px; margin-bottom: 8px;
+    transition: border-color .2s;
+  }
+  .admin-user-row:hover { border-color: var(--accent); }
+  .admin-user-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
+  }
+  .admin-user-info { flex: 1; min-width: 0; }
+  .admin-user-name { font-size: 14px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 6px; }
+  .admin-badge-admin {
+    font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px;
+    background: #F59E0B22; color: #F59E0B; border: 1px solid #F59E0B66;
+    text-transform: uppercase;
+  }
+  .admin-user-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .admin-user-actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .admin-action-btn {
+    font-size: 11px; font-weight: 600; padding: 6px 12px; border-radius: 8px;
+    cursor: pointer; border: 1px solid; transition: all .2s;
+  }
+  .admin-action-btn.reset {
+    background: #7C6FFF22; color: #7C6FFF; border-color: #7C6FFF66;
+  }
+  .admin-action-btn.reset:hover { background: #7C6FFF44; border-color: #7C6FFF; }
+  .admin-action-btn.delete {
+    background: #EF444422; color: #EF4444; border-color: #EF444466;
+  }
+  .admin-action-btn.delete:hover { background: #EF444444; border-color: #EF4444; }
+
+  /* Admin Reset PIN modal */
+  #admin-reset-overlay {
+    display: none; position: fixed; inset: 0; z-index: 4000;
+    background: rgba(0,0,0,.8); backdrop-filter: blur(8px);
+    align-items: center; justify-content: center;
+  }
+  #admin-reset-overlay.open { display: flex; }
+  .admin-reset-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; padding: 28px; width: 320px; text-align: center;
+    box-shadow: 0 24px 64px rgba(0,0,0,.6);
+  }
+  .admin-reset-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .admin-reset-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
+  .admin-reset-for { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 16px; }
 </style>
 </head>
 <body>
 
 <!-- ══ PIN OVERLAY ══ -->
+<!-- ══ USER SELECT OVERLAY ══ -->
+<!-- ══ LOGIN OVERLAY ══ -->
+<div id="login-overlay">
+  <div class="login-box">
+    <div class="pin-logo">ShanTracks</div>
+    <div class="login-app-sub">Personal Finance Dashboard</div>
+
+    <!-- ── LOGIN VIEW ── -->
+    <div id="login-view">
+      <div class="login-field-group">
+        <label class="login-field-label">User ID</label>
+        <input class="login-field-input" id="login-uid" type="text" placeholder="Enter your User ID"
+          autocomplete="off" spellcheck="false"
+          oninput="loginClearError()" onkeydown="if(event.key==='Enter')document.getElementById('login-pin-section').style.display='block'" />
+      </div>
+      <div id="login-pin-section">
+        <div class="login-field-label" style="margin-bottom:8px">PIN</div>
+        <div class="pin-dots" id="login-dots"></div>
+        <div class="pin-error" id="login-error"></div>
+        <div class="pin-keypad">
+          <button class="pin-key" onclick="lKey('1')">1</button><button class="pin-key" onclick="lKey('2')">2</button><button class="pin-key" onclick="lKey('3')">3</button>
+          <button class="pin-key" onclick="lKey('4')">4</button><button class="pin-key" onclick="lKey('5')">5</button><button class="pin-key" onclick="lKey('6')">6</button>
+          <button class="pin-key" onclick="lKey('7')">7</button><button class="pin-key" onclick="lKey('8')">8</button><button class="pin-key" onclick="lKey('9')">9</button>
+          <button class="pin-key del" onclick="lBack()">⌫</button><button class="pin-key" onclick="lKey('0')">0</button>
+          <button class="pin-key confirm" onclick="lSubmit()">OK</button>
+        </div>
+      </div>
+      <div class="login-footer">
+        <span class="login-footer-text">New to ShanTracks?</span>
+        <button class="login-link-btn" onclick="showRegisterView()">Create Account</button>
+        <span class="login-divider">|</span>
+        <button class="login-link-btn" onclick="showRestoreView()" style="color:var(--gold)">Restore from Gist</button>
+      </div>
+    </div>
+
+    <!-- ── RESTORE FROM GIST VIEW ── -->
+    <div id="restore-view" style="display:none">
+      <div style="font-size:13px;color:var(--text-muted);text-align:center;margin-bottom:16px;line-height:1.5">
+        Enter your GitHub Token &amp; Gist ID to restore your account on this device.
+      </div>
+      <div class="restore-field-group">
+        <label class="login-field-label">GitHub Token</label>
+        <input class="restore-input" id="restore-token" type="password" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off" />
+      </div>
+      <div class="restore-field-group">
+        <label class="login-field-label">Gist ID</label>
+        <input class="restore-input" id="restore-gist" type="text" placeholder="e.g. 3a4b5c6d7e8f..." autocomplete="off" spellcheck="false" />
+      </div>
+      <div class="restore-error" id="restore-error"></div>
+      <button class="restore-btn" onclick="restoreFromGist()">Restore Account</button>
+      <div class="login-footer" style="margin-top:16px">
+        <button class="login-link-btn" onclick="showLoginView()">← Back to Login</button>
+      </div>
+    </div>
+
+    <!-- ── REGISTER VIEW ── -->
+    <div id="register-view" style="display:none">
+      <div class="login-field-group">
+        <label class="login-field-label">Choose a User ID</label>
+        <input class="login-field-input" id="reg-uid" type="text" placeholder="e.g. shanmugam123"
+          autocomplete="off" spellcheck="false" maxlength="24" oninput="regClearError()" />
+        <div class="login-field-hint">Only letters, numbers, underscore. Min 3 chars.</div>
+      </div>
+      <div class="login-field-label" id="reg-pin-label" style="margin-bottom:8px">Create a PIN (4–6 digits)</div>
+      <div class="pin-dots" id="reg-dots"></div>
+      <div class="pin-error" id="reg-error"></div>
+      <div class="pin-keypad">
+        <button class="pin-key" onclick="rKey('1')">1</button><button class="pin-key" onclick="rKey('2')">2</button><button class="pin-key" onclick="rKey('3')">3</button>
+        <button class="pin-key" onclick="rKey('4')">4</button><button class="pin-key" onclick="rKey('5')">5</button><button class="pin-key" onclick="rKey('6')">6</button>
+        <button class="pin-key" onclick="rKey('7')">7</button><button class="pin-key" onclick="rKey('8')">8</button><button class="pin-key" onclick="rKey('9')">9</button>
+        <button class="pin-key del" onclick="rBack()">⌫</button><button class="pin-key" onclick="rKey('0')">0</button>
+        <button class="pin-key confirm" onclick="rSubmit()">OK</button>
+      </div>
+      <div class="login-footer">
+        <button class="login-link-btn" onclick="showLoginView()">← Back to Login</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <div id="pin-overlay">
   <div class="pin-box">
-    <div class="pin-logo">ShanTracks</div>
+    <div id="pin-user-badge" class="pin-user-badge" style="display:none"></div>
+    <div class="pin-logo" id="pin-logo-text">ShanTracks</div>
     <div class="pin-subtitle" id="pin-subtitle">Personal Finance Dashboard</div>
     <div class="pin-label" id="pin-label">Enter PIN</div>
     <div class="pin-dots" id="pin-dots"></div>
@@ -1036,6 +1318,11 @@
       <div class="sync-indicator">
         <div class="sync-dot" id="sync-dot"></div>
         <span id="sync-label">–</span>
+      </div>
+      <button class="admin-btn" id="admin-nav-btn" onclick="openAdminPanel()" title="Admin Panel">⚙ Admin</button>
+      <div class="nav-user-chip" id="nav-user-chip" onclick="switchUser()" title="Switch user">
+        <div class="nav-user-avatar" id="nav-user-avatar"></div>
+        <span class="nav-user-name" id="nav-user-name"></span>
       </div>
       <button class="btn-icon" title="Lock" onclick="lockApp()">🔒</button>
       <button class="btn-icon" title="Toggle Theme" onclick="cycleTheme()">🌙</button>
@@ -1334,7 +1621,7 @@
           <div class="gold-owner-col">
             <div class="gold-owner-title">👤 Me</div>
             <table class="gold-mini-table" id="gold-me-table">
-              <thead><tr><th>#</th><th>Description</th><th>Weight (g)</th><th>Rate</th><th>Value</th><th></th></tr></thead>
+              <thead><tr><th>#</th><th>Description</th><th>Weight (g)</th><th>Rate</th><th>Value</th><th title="Include in Net Worth">NW</th><th></th></tr></thead>
               <tbody id="gold-me-tbody"></tbody>
             </table>
             <div class="gold-table-summary" id="gold-me-summary"><span>Total</span><span>–</span></div>
@@ -1343,7 +1630,7 @@
           <div class="gold-owner-col">
             <div class="gold-owner-title">👤 Her</div>
             <table class="gold-mini-table" id="gold-her-table">
-              <thead><tr><th>#</th><th>Description</th><th>Weight (g)</th><th>Rate</th><th>Value</th><th></th></tr></thead>
+              <thead><tr><th>#</th><th>Description</th><th>Weight (g)</th><th>Rate</th><th>Value</th><th title="Include in Net Worth">NW</th><th></th></tr></thead>
               <tbody id="gold-her-tbody"></tbody>
             </table>
             <div class="gold-table-summary" id="gold-her-summary"><span>Total</span><span>–</span></div>
@@ -1543,14 +1830,258 @@
 'use strict';
 
 // ── CONSTANTS ──
-const LS_PIN     = 'fin_pin';
-const LS_DATA    = 'fin_data';
-const LS_TOKEN   = 'fin_gh_token';
-const LS_GIST    = 'fin_gist_id';
-const LS_SYNCED  = 'fin_last_synced';
+const LS_USERS   = 'st_users';          // shared user registry
+let   LS_PIN     = 'fin_pin';           // updated per-user on login
+let   LS_DATA    = 'fin_data';
+let   LS_TOKEN   = 'fin_gh_token';
+let   LS_GIST    = 'fin_gist_id';
+let   LS_SYNCED  = 'fin_last_synced';
+
+let currentUserId = null;
+
+const AVATAR_COLORS = ['#7C6FFF','#F472B6','#38BDF8','#4ADE80','#FB923C','#A855F7','#F59E0B','#10B981'];
+
+function getUserColor(id) {
+  const users = loadUsers();
+  const u = users.find(x => x.id === id);
+  return u ? u.color : '#7C6FFF';
+}
+
+function getUserInitials(name) {
+  return (name || '?').trim().split(/\s+/).map(w => w[0].toUpperCase()).slice(0,2).join('');
+}
+
+function loadUsers() {
+  try {
+    const arr = JSON.parse(localStorage.getItem(LS_USERS) || '[]');
+    return Array.isArray(arr) ? arr.filter(u => u && u.id && u.userId) : [];
+  } catch { return []; }
+}
+
+function saveUsers(users) {
+  localStorage.setItem(LS_USERS, JSON.stringify(users));
+}
+
+function setUserContext(userId) {
+  currentUserId = userId;
+  LS_PIN    = `st_pin_${userId}`;
+  LS_DATA   = `st_data_${userId}`;
+  LS_TOKEN  = `st_token_${userId}`;
+  LS_GIST   = `st_gist_${userId}`;
+  LS_SYNCED = `st_synced_${userId}`;
+}
+
+// ────────────────────────────────────────────
+// LOGIN SYSTEM
+// ────────────────────────────────────────────
+let loginBuf  = '';
+let regBuf    = '';
+let regStep   = 'pin';   // 'pin' | 'confirm'
+let regFirst  = '';
+
+function showLoginView() {
+  document.getElementById('login-view').style.display = '';
+  document.getElementById('register-view').style.display = 'none';
+  document.getElementById('restore-view').style.display = 'none';
+  loginBuf = '';
+  renderLoginDots();
+  document.getElementById('login-error').textContent = '';
+  document.getElementById('login-uid').focus();
+}
+
+function showRegisterView() {
+  document.getElementById('login-view').style.display = 'none';
+  document.getElementById('register-view').style.display = '';
+  document.getElementById('restore-view').style.display = 'none';
+  regBuf = ''; regStep = 'pin'; regFirst = '';
+  renderRegDots();
+  document.getElementById('reg-error').textContent = '';
+  document.getElementById('reg-pin-label').textContent = 'Create a PIN (4–6 digits)';
+  document.getElementById('reg-uid').value = '';
+  document.getElementById('reg-uid').focus();
+}
+
+function showRestoreView() {
+  document.getElementById('login-view').style.display = 'none';
+  document.getElementById('register-view').style.display = 'none';
+  document.getElementById('restore-view').style.display = '';
+  document.getElementById('restore-error').textContent = '';
+  document.getElementById('restore-token').value = '';
+  document.getElementById('restore-gist').value = '';
+  document.getElementById('restore-token').focus();
+}
+
+function loginClearError() { document.getElementById('login-error').textContent = ''; }
+function regClearError()   { document.getElementById('reg-error').textContent = ''; }
+
+function renderLoginDots() {
+  const d = document.getElementById('login-dots');
+  if (!d) return;
+  d.innerHTML = '';
+  for (let i = 0; i < 6; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'pin-dot' + (i < loginBuf.length ? ' filled' : '');
+    d.appendChild(dot);
+  }
+}
+
+function renderRegDots() {
+  const d = document.getElementById('reg-dots');
+  if (!d) return;
+  d.innerHTML = '';
+  for (let i = 0; i < 6; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'pin-dot' + (i < regBuf.length ? ' filled' : '');
+    d.appendChild(dot);
+  }
+}
+
+// Login keypad
+function lKey(n) {
+  if (loginBuf.length >= 6) return;
+  loginBuf += n; renderLoginDots();
+  if (loginBuf.length >= 4) document.getElementById('login-error').textContent = '';
+}
+function lBack() { loginBuf = loginBuf.slice(0,-1); renderLoginDots(); }
+async function lSubmit() {
+  const uid_val = document.getElementById('login-uid').value.trim();
+  const errEl   = document.getElementById('login-error');
+  if (!uid_val)            { errEl.textContent = 'Enter your User ID'; return; }
+  if (loginBuf.length < 4) { errEl.textContent = 'PIN must be at least 4 digits'; return; }
+  try {
+    const users = loadUsers();
+    const user  = users.find(u => u.userId && u.userId.toLowerCase() === uid_val.toLowerCase());
+    const hash  = await sha256(loginBuf);
+    if (!user || user.pinHash !== hash) {
+      errEl.textContent = 'Invalid User ID or PIN';
+      loginBuf = ''; renderLoginDots();
+      const dots = document.getElementById('login-dots');
+      dots.querySelectorAll('.pin-dot').forEach(d => { d.classList.add('error'); setTimeout(()=>d.classList.remove('error'),600); });
+      return;
+    }
+    // Success
+    setUserContext(user.id);
+    document.getElementById('login-overlay').style.display = 'none';
+    updateNavUser();
+    unlockApp();
+  } catch(e) {
+    errEl.textContent = 'Login error: ' + e.message;
+    console.error('lSubmit error:', e);
+  }
+}
+
+// Register keypad
+function rKey(n) { if (regBuf.length >= 6) return; regBuf += n; renderRegDots(); }
+function rBack() { regBuf = regBuf.slice(0,-1); renderRegDots(); }
+async function rSubmit() {
+  const errEl  = document.getElementById('reg-error');
+  try {
+    if (regStep === 'pin') {
+      const uid_val = document.getElementById('reg-uid').value.trim();
+      if (!uid_val || uid_val.length < 3)          { errEl.textContent = 'User ID must be at least 3 characters'; return; }
+      if (!/^[a-zA-Z0-9_]+$/.test(uid_val))        { errEl.textContent = 'Only letters, numbers, underscore allowed'; return; }
+      if (regBuf.length < 4)                        { errEl.textContent = 'PIN must be at least 4 digits'; return; }
+      const users = loadUsers();
+      if (users.find(u => u.userId && u.userId.toLowerCase() === uid_val.toLowerCase())) {
+        errEl.textContent = 'User ID already taken — choose another'; return;
+      }
+      regFirst = regBuf; regBuf = ''; regStep = 'confirm';
+      renderRegDots();
+      document.getElementById('reg-pin-label').textContent = 'Confirm your PIN';
+      errEl.textContent = '';
+      return;
+    }
+    if (regStep === 'confirm') {
+      if (regBuf !== regFirst) {
+        errEl.textContent = 'PINs do not match. Start over.';
+        regBuf = ''; regFirst = ''; regStep = 'pin';
+        renderRegDots();
+        document.getElementById('reg-pin-label').textContent = 'Create a PIN (4–6 digits)';
+        return;
+      }
+      const uid_val = document.getElementById('reg-uid').value.trim();
+      const hash    = await sha256(regBuf);
+      const users   = loadUsers();
+      const newUser = {
+        id: uid(), userId: uid_val,
+        pinHash: hash,
+        color: AVATAR_COLORS[users.length % AVATAR_COLORS.length],
+        isAdmin: users.length === 0, // first ever user becomes super admin
+        createdAt: new Date().toISOString()
+      };
+      users.push(newUser);
+      saveUsers(users);
+      setUserContext(newUser.id);
+      localStorage.setItem(`st_data_${newUser.id}`, JSON.stringify(blankData()));
+      document.getElementById('login-overlay').style.display = 'none';
+      updateNavUser();
+      unlockApp();
+    }
+  } catch(e) {
+    errEl.textContent = 'Registration error: ' + e.message;
+    console.error('rSubmit error:', e);
+  }
+}
+
+// Keyboard support for login overlay
+document.addEventListener('keydown', e => {
+  const lo = document.getElementById('login-overlay');
+  if (!lo || lo.style.display === 'none') return;
+  const loginActive = document.getElementById('login-view').style.display !== 'none';
+  const regActive   = document.getElementById('register-view').style.display !== 'none';
+  // Don't intercept when typing in text inputs
+  if (document.activeElement?.classList.contains('login-field-input')) return;
+  if (e.key >= '0' && e.key <= '9') { loginActive ? lKey(e.key) : rKey(e.key); }
+  if (e.key === 'Backspace')        { loginActive ? lBack()     : rBack(); }
+  if (e.key === 'Enter')            { loginActive ? lSubmit()   : rSubmit(); }
+});
+
+function switchUser() {
+  clearTimeout(lockTimer);
+  currentUserId = null; appData = null;
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('pin-overlay').style.display = 'none';
+  document.getElementById('login-overlay').style.display = 'flex';
+  const adminBtn = document.getElementById('admin-nav-btn');
+  if (adminBtn) adminBtn.classList.remove('visible');
+  showLoginView();
+}
+
+function showUserSelect() {
+  document.getElementById('login-overlay').style.display = 'flex';
+  showLoginView();
+}
+
+function updateNavUser() {
+  if (!currentUserId) return;
+  const users = loadUsers();
+  const user  = users.find(u => u.id === currentUserId);
+  if (!user) return;
+  const avatarEl = document.getElementById('nav-user-avatar');
+  const nameEl   = document.getElementById('nav-user-name');
+  if (avatarEl) { avatarEl.style.background = user.color; avatarEl.textContent = getUserInitials(user.userId); }
+  if (nameEl) nameEl.textContent = user.userId;
+  updateAdminNavBtn();
+}
 let LOCK_TIMEOUT = 5 * 60 * 1000; // 5 min (updated by setAutoLock)
 
 // ── DEFAULT DATA ──
+function blankData() {
+  return {
+    accounts: [], cashInHand: 0, cashOverseas: 0,
+    investments: {},
+    bills: [],
+    salary: { monthly: 0, carLoan: 0, toRunDenominator: 0, monthlyExpense: 0, extra: [] },
+    expenses: [], budgets: {}, netWorthHistory: [],
+    assets: [], liabilities: [],
+    notes: [],
+    goldRate: 0, goldReserve: 0,
+    goldMe: { items: [] }, goldHer: { items: [] },
+    settings: { theme: 'dark', autoLockMinutes: 5 },
+    lastUpdated: ''
+  };
+}
+
 function defaultData() {
   return {
     accounts: [
@@ -1828,8 +2359,13 @@ function handlePinKeydown(e) {
 function unlockApp() {
   document.getElementById('pin-overlay').style.display = 'none';
   document.getElementById('app').classList.add('visible');
+  loadData();
+  LOCK_TIMEOUT = ((appData.settings?.autoLockMinutes || 5)) * 60 * 1000;
+  renderAll();
+  initSettings();
+  renderSettingsTab();
+  updateNavUser();
   resetLockTimer();
-  // Auto-pull on unlock
   pullAndMerge();
 }
 
@@ -1872,7 +2408,7 @@ function loadData() {
       // Merge with defaults
       appData = Object.assign(defaultData(), parsed);
       // Ensure sub-objects exist
-      if (!appData.investments) appData.investments = defaultData().investments;
+      if (!appData.investments || typeof appData.investments !== 'object') appData.investments = {};
       if (!appData.salary) appData.salary = defaultData().salary;
       if (!appData.salary.extra) appData.salary.extra = [];
       if (!appData.salary.monthlyExpense) appData.salary.monthlyExpense = appData.salary.toRunDenominator || 0;
@@ -1903,10 +2439,11 @@ function loadData() {
         appData.goldHer.items = [...(appData.goldHer.chains||[]), ...(appData.goldHer.rings||[])];
       }
     } else {
-      appData = defaultData();
+      // No saved data for this user — start blank (not sample data)
+      appData = currentUserId ? blankData() : defaultData();
     }
   } catch(e) {
-    appData = defaultData();
+    appData = currentUserId ? blankData() : defaultData();
   }
 }
 
@@ -1938,10 +2475,24 @@ function setSyncStatus(state, label) {
 }
 
 async function pushToGist(data) {
+  if (!currentUserId) return; // never push when no user is logged in
   const { token, gistId } = getSyncCreds();
   if (!token || !gistId) return;
   setSyncStatus('syncing', 'Syncing…');
   try {
+    // Embed user identity so account can be restored on a new device
+    const users   = loadUsers();
+    const me      = users.find(u => u.id === currentUserId);
+    const payload = {
+      _meta: {
+        userId:    me ? me.userId   : '',
+        pinHash:   me ? me.pinHash  : '',
+        color:     me ? me.color    : '#7C6FFF',
+        isAdmin:   me ? !!me.isAdmin : false,
+        syncedAt:  new Date().toISOString()
+      },
+      data
+    };
     const res = await fetch(`https://api.github.com/gists/${gistId}`, {
       method: 'PATCH',
       headers: {
@@ -1950,7 +2501,7 @@ async function pushToGist(data) {
         'Accept': 'application/vnd.github.v3+json'
       },
       body: JSON.stringify({
-        files: { 'shantracks_data.json': { content: JSON.stringify(data, null, 2) } }
+        files: { 'shantracks_data.json': { content: JSON.stringify(payload, null, 2) } }
       })
     });
     if (res.status === 401) throw new Error('Token invalid or expired — create a new classic token (ghp_...)');
@@ -1982,10 +2533,13 @@ async function pullFromGist() {
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const gist = await res.json();
-    // Support both old and new filename
     const file = gist.files['shantracks_data.json'] || gist.files['fintrack_data.json'];
     if (!file) return null;
-    return JSON.parse(file.content);
+    const parsed = JSON.parse(file.content);
+    // New wrapped format: { _meta, data }
+    // Old raw format: directly the appData object
+    if (parsed && parsed._meta && parsed.data) return parsed;
+    return { _meta: null, data: parsed }; // wrap old format
   } catch(e) {
     setSyncStatus('error', 'Pull failed');
     return null;
@@ -1993,9 +2547,10 @@ async function pullFromGist() {
 }
 
 async function pullAndMerge() {
+  if (!currentUserId) return;
   const { token, gistId } = getSyncCreds();
   if (!token || !gistId) {
-    setSyncStatus('error', 'Not configured');
+    setSyncStatus('error', 'Not configured — go to Settings → Sync');
     return;
   }
   if (!navigator.onLine) {
@@ -2003,13 +2558,14 @@ async function pullAndMerge() {
     return;
   }
   setSyncStatus('syncing', 'Pulling…');
-  const remote = await pullFromGist();
-  if (remote) {
-    // Merge: use remote if it's newer
-    const localTs = appData.lastUpdated ? new Date(appData.lastUpdated).getTime() : 0;
-    const remoteTs = remote.lastUpdated ? new Date(remote.lastUpdated).getTime() : 0;
+  const result = await pullFromGist();
+  if (result && result.data) {
+    const remote = result.data;
+    const localTs  = appData.lastUpdated  ? new Date(appData.lastUpdated).getTime()  : 0;
+    const remoteTs = remote.lastUpdated   ? new Date(remote.lastUpdated).getTime()   : 0;
     if (remoteTs > localTs) {
-      appData = Object.assign(defaultData(), remote);
+      // Use blankData() as base so no stale sample data leaks in
+      appData = Object.assign(blankData(), remote);
       saveData(true);
       renderAll();
       showToast('Data pulled from Gist', 'info');
@@ -2032,7 +2588,7 @@ function schedulePush() {
 
 // Push when back online
 window.addEventListener('online', () => {
-  if (syncPending) pushToGist(appData);
+  if (syncPending && currentUserId && appData) pushToGist(appData);
 });
 window.addEventListener('offline', () => {
   setSyncStatus('offline', 'Offline');
@@ -2042,6 +2598,77 @@ async function manualSync() {
   await pullAndMerge();
   await pushToGist(appData);
   showToast('Manual sync complete', 'success');
+}
+
+// ── RESTORE FROM GIST (cross-device login) ──
+async function restoreFromGist() {
+  const token  = document.getElementById('restore-token').value.trim();
+  const gistId = document.getElementById('restore-gist').value.trim();
+  const errEl  = document.getElementById('restore-error');
+  errEl.textContent = '';
+
+  if (!token)  { errEl.textContent = 'Enter your GitHub Token'; return; }
+  if (!gistId) { errEl.textContent = 'Enter your Gist ID'; return; }
+
+  errEl.textContent = 'Fetching from Gist…';
+  try {
+    const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+      headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if (res.status === 401) { errEl.textContent = 'Invalid token — use a classic token (ghp_...)'; return; }
+    if (res.status === 404) { errEl.textContent = 'Gist not found — check the Gist ID'; return; }
+    if (!res.ok) { errEl.textContent = `GitHub error: HTTP ${res.status}`; return; }
+
+    const gist    = await res.json();
+    const file    = gist.files['shantracks_data.json'] || gist.files['fintrack_data.json'];
+    if (!file) { errEl.textContent = 'No ShanTracks data found in this Gist'; return; }
+
+    const parsed  = JSON.parse(file.content);
+    const meta    = parsed._meta || null;
+    const data    = parsed.data  || parsed; // handle old format
+
+    if (!meta || !meta.userId || !meta.pinHash) {
+      errEl.textContent = 'Gist has no user profile — sync from original device first, then try again';
+      return;
+    }
+
+    // Create or update user in local registry
+    const users   = loadUsers();
+    let existing  = users.find(u => u.userId.toLowerCase() === meta.userId.toLowerCase());
+    let userId;
+    if (existing) {
+      // Update pinHash in case it changed
+      existing.pinHash = meta.pinHash;
+      if (meta.color) existing.color = meta.color;
+      saveUsers(users);
+      userId = existing.id;
+    } else {
+      const newUser = {
+        id: uid(), userId: meta.userId, pinHash: meta.pinHash,
+        color: meta.color || '#7C6FFF', isAdmin: meta.isAdmin || false,
+        createdAt: new Date().toISOString()
+      };
+      users.push(newUser);
+      saveUsers(users);
+      userId = newUser.id;
+    }
+
+    // Save token + gist under this user's keys
+    setUserContext(userId);
+    localStorage.setItem(LS_TOKEN, token);
+    localStorage.setItem(LS_GIST, gistId);
+    localStorage.setItem(LS_DATA, JSON.stringify(data));
+
+    // Log in
+    document.getElementById('login-overlay').style.display = 'none';
+    updateNavUser();
+    unlockApp();
+    showToast(`Welcome back, ${meta.userId}! Data restored from Gist.`, 'success');
+
+  } catch(e) {
+    errEl.textContent = 'Error: ' + e.message;
+    console.error('restoreFromGist error:', e);
+  }
 }
 
 function saveGistConfig() {
@@ -2543,7 +3170,7 @@ function renderSalaryMetrics() {
   if (!container) return;
   container.innerHTML = '';
   const sal = appData.salary || {};
-  const { monthly = 0, carLoan = 0, monthlyExpense = 0 } = sal;
+  const { monthly = 0, monthlyExpense = 0 } = sal;
 
   // Use real Net Worth (assets − liabilities) for the Months to Run calculation
   const { netWorth } = calcNetWorth();
@@ -2579,7 +3206,6 @@ function renderSalaryMetrics() {
 
   addRow('Monthly Salary',   fmtINR(monthly),                        false, 'monthly',        false);
   addRow('NW Ratio',         fmtMultiplier(ratio * 100),             true,  null,             false);
-  addRow('Car Loan Amt',     fmtINR(carLoan),                        false, 'carLoan',        true,  '__carLoan');
   addRow('Monthly Expense',  fmtINR(monthlyExpense),                 false, 'monthlyExpense', false);
   addRow('Months to Run',    monthsToRun.toFixed(1) + ' mo',         true,  null,             false);
 
@@ -3431,7 +4057,7 @@ function calcAutoAssets() {
   const pf       = appData.investments.PF  || 0;
   const mf       = appData.investments.VL  || 0;
   const otherInv = appData.investments.Gra || 0;
-  const goldVal  = appData.goldRate > 0 ? calcTotalGoldValue() : (appData.investments.Gold || 0);
+  const goldVal  = appData.goldRate > 0 ? (calcGoldJewelleryValue() + (appData.goldReserve || 0)) : (appData.investments.Gold || 0);
   return [
     { id:'_auto_bank',  name:'Bank Accounts',  category:'bank',       value:bankBal,  auto:true },
     { id:'_auto_recv',  name:'Receivables',    category:'receivable', value:recvBal,  auto:true },
@@ -3679,17 +4305,23 @@ function editNWMetric(field) {
 // ════════════════════════════════════════════
 // GOLD MODULE
 // ════════════════════════════════════════════
-function calcTotalGoldWeight() {
-  const sum = arr => (arr||[]).reduce((s,r)=>s+(parseFloat(r.weight)||0),0);
+function calcTotalGoldWeight(onlyNW) {
+  // onlyNW=true → only items checked for Net Worth; false/undefined → all items
+  const sum = arr => (arr||[]).reduce((s,r) => {
+    if (onlyNW && r.inNetWorth === false) return s;
+    return s + (parseFloat(r.weight)||0);
+  }, 0);
   return sum(appData.goldMe.items) + sum(appData.goldHer.items);
 }
 function calcGoldJewelleryValue() {
+  // Used for Net Worth — only NW-checked items
   const rate = appData.goldRate || 0;
-  const totalWeight = calcTotalGoldWeight();
-  return Math.round(totalWeight * rate); // paise
+  return Math.round(calcTotalGoldWeight(true) * rate); // paise
 }
 function calcTotalGoldValue() {
-  return calcGoldJewelleryValue() + (appData.goldReserve || 0);
+  // Full gold module total (all items + reserve) — for display in gold module header
+  const rate = appData.goldRate || 0;
+  return Math.round(calcTotalGoldWeight(false) * rate) + (appData.goldReserve || 0);
 }
 
 function renderGoldModule() {
@@ -3700,9 +4332,12 @@ function renderGoldModule() {
   if (resInp && !resInp.matches(':focus')) resInp.value = appData.goldReserve > 0 ? (appData.goldReserve/100).toFixed(0) : '';
 
   const totalVal = calcTotalGoldValue();
-  const totalWt  = calcTotalGoldWeight();
+  const totalWt  = calcTotalGoldWeight(false);
+  const nwWt     = calcTotalGoldWeight(true);
+  const nwVal    = Math.round(nwWt * (appData.goldRate || 0)) + (appData.goldReserve || 0);
   const chip = document.getElementById('gold-total-chip');
-  if (chip) chip.innerHTML = `<div class="gold-total-chip-val">${fmtINR(totalVal)}</div><div class="gold-total-chip-sub">${totalWt.toFixed(1)}g total weight</div>`;
+  const nwNote   = nwWt < totalWt ? `<div style="font-size:9px;color:var(--accent);margin-top:2px">NW: ${nwWt.toFixed(1)}g / ${fmtINR(nwVal)}</div>` : '';
+  if (chip) chip.innerHTML = `<div class="gold-total-chip-val">${fmtINR(totalVal)}</div><div class="gold-total-chip-sub">${totalWt.toFixed(1)}g total weight</div>${nwNote}`;
   const summary = document.getElementById('gold-grand-summary');
   if (summary) summary.textContent = `${totalWt.toFixed(1)}g · ${fmtINR(totalVal)}`;
 
@@ -3719,25 +4354,35 @@ function renderGoldTable(owner) {
   if (!tbody) return;
 
   tbody.innerHTML = '';
-  let totalWeight = 0, totalValue = 0;
+  let totalWeight = 0, totalValue = 0, nwWeight = 0, nwValue = 0;
   items.forEach((item, idx) => {
-    const w   = parseFloat(item.weight) || 0;
-    const val = Math.round(w * rate);
+    const w      = parseFloat(item.weight) || 0;
+    const val    = Math.round(w * rate);
+    const inNW   = item.inNetWorth !== false; // default true
     totalWeight += w; totalValue += val;
+    if (inNW) { nwWeight += w; nwValue += val; }
     const tr = document.createElement('tr');
+    if (!inNW) tr.classList.add('gold-row-excluded');
     tr.innerHTML = `
       <td style="color:var(--text-muted);font-size:11px">${idx+1}</td>
       <td><input class="gold-d-inp" value="${item.desc||''}" onchange="updateGoldDesc('${owner}','${item.id}',this.value)" /></td>
       <td><input class="gold-w-inp" type="number" min="0" step="0.1" value="${w||''}" onchange="updateGoldWeight('${owner}','${item.id}',this.value)" /></td>
       <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted)">${rate>0?fmtINR(rate)+'<span style="font-size:9px">/g</span>':'—'}</td>
-      <td style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:var(--gold)">${rate>0?fmtINR(val):'—'}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:${inNW?'var(--gold)':'var(--text-muted)'}">${rate>0?fmtINR(val):'—'}</td>
+      <td class="gold-nw-cb-cell" style="text-align:center">
+        <input type="checkbox" class="gold-nw-cb" ${inNW?'checked':''} title="${inNW?'In Net Worth':'Gold module only'}"
+          onchange="toggleGoldNW('${owner}','${item.id}',this.checked)" />
+      </td>
       <td><button class="action-btn del" onclick="deleteGoldRow('${owner}','${item.id}')">✕</button></td>
     `;
     tbody.appendChild(tr);
   });
 
   if (summEl) {
-    summEl.innerHTML = `<span>Total: ${totalWeight.toFixed(1)}g</span><span>${rate>0?fmtINR(totalValue):'—'}</span>`;
+    const nwPart = nwWeight < totalWeight
+      ? ` &nbsp;<span style="font-size:10px;color:var(--accent)" title="Included in Net Worth">NW: ${nwWeight.toFixed(1)}g / ${rate>0?fmtINR(nwValue):'—'}</span>`
+      : '';
+    summEl.innerHTML = `<span>Total: ${totalWeight.toFixed(1)}g${nwPart}</span><span>${rate>0?fmtINR(totalValue):'—'}</span>`;
   }
 }
 
@@ -3798,12 +4443,17 @@ function confirmAddGoldRecord(owner) {
   const desc   = document.getElementById('gold-add-desc').value.trim();
   const weight = parseFloat(document.getElementById('gold-add-weight').value) || 0;
   const key    = owner === 'me' ? 'goldMe' : 'goldHer';
-  appData[key].items.push({ id: uid(), desc, weight });
+  appData[key].items.push({ id: uid(), desc, weight, inNetWorth: true });
   saveData();
   renderGoldModule();
   renderNetWorthTab();
   document.getElementById('gold-add-ov').remove();
   showToast('Gold record added', 'success');
+}
+function toggleGoldNW(owner, id, checked) {
+  const key  = owner === 'me' ? 'goldMe' : 'goldHer';
+  const item = appData[key].items.find(r => r.id === id);
+  if (item) { item.inNetWorth = checked; saveData(); renderGoldModule(); renderNetWorthTab(); }
 }
 function deleteGoldRow(owner, id) {
   const key = owner === 'me' ? 'goldMe' : 'goldHer';
@@ -4081,17 +4731,264 @@ function renderAppInfo() {
 // ────────────────────────────────────────────
 // INIT
 // ────────────────────────────────────────────
+function migrateOldData() {
+  // If old single-user data exists and no users registered yet, migrate it
+  const users = loadUsers();
+  if (users.length > 0) return;
+  const oldData  = localStorage.getItem('fin_data');
+  const oldPin   = localStorage.getItem('fin_pin');
+  const oldToken = localStorage.getItem('fin_gh_token');
+  const oldGist  = localStorage.getItem('fin_gist_id');
+  if (!oldData && !oldPin) return;
+  // Create default user
+  const userId = uid();
+  const user = { id: userId, userId: 'admin', pinHash: oldPin || '', color: AVATAR_COLORS[0], isAdmin: true, createdAt: new Date().toISOString() };
+  saveUsers([user]);
+  if (oldData)  localStorage.setItem(`st_data_${userId}`, oldData);
+  if (oldPin)   localStorage.setItem(`st_pin_${userId}`, oldPin);
+  if (oldToken) localStorage.setItem(`st_token_${userId}`, oldToken);
+  if (oldGist)  localStorage.setItem(`st_gist_${userId}`, oldGist);
+  // Clean up old keys
+  ['fin_data','fin_pin','fin_gh_token','fin_gist_id','fin_last_synced'].forEach(k => localStorage.removeItem(k));
+}
+
 function init() {
-  loadData();
+  migrateOldData();
   initExpensesTab();
-  LOCK_TIMEOUT = ((appData.settings.autoLockMinutes || 5)) * 60 * 1000;
-  renderAll();
-  initPinOverlay();
-  initSettings();
-  renderSettingsTab();
+  // Always start with login screen
+  document.getElementById('pin-overlay').style.display = 'none';
+  document.getElementById('login-overlay').style.display = 'flex';
+  showLoginView();
+}
+
+// ════════════════════════════════════════════
+// ADMIN PANEL
+// ════════════════════════════════════════════
+
+function isCurrentUserAdmin() {
+  if (!currentUserId) return false;
+  const users = loadUsers();
+  const me = users.find(u => u.id === currentUserId);
+  return me && me.isAdmin === true;
+}
+
+function updateAdminNavBtn() {
+  const btn = document.getElementById('admin-nav-btn');
+  if (!btn) return;
+  if (isCurrentUserAdmin()) btn.classList.add('visible');
+  else btn.classList.remove('visible');
+}
+
+function openAdminPanel() {
+  if (!isCurrentUserAdmin()) return;
+  renderAdminPanel();
+  document.getElementById('admin-overlay').classList.add('open');
+}
+
+function closeAdminPanel() {
+  document.getElementById('admin-overlay').classList.remove('open');
+}
+
+function adminOverlayClick(e) {
+  if (e.target === document.getElementById('admin-overlay')) closeAdminPanel();
+}
+
+function renderAdminPanel() {
+  const users = loadUsers();
+  const admins   = users.filter(u => u.isAdmin);
+  const regulars = users.filter(u => !u.isAdmin);
+
+  document.getElementById('admin-stat-total').textContent   = users.length;
+  document.getElementById('admin-stat-admin').textContent   = admins.length;
+  document.getElementById('admin-stat-regular').textContent = regulars.length;
+
+  const listEl = document.getElementById('admin-user-list');
+  if (!users.length) { listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px;">No users found</div>'; return; }
+
+  listEl.innerHTML = users.map(u => {
+    const initials = getUserInitials(u.userId);
+    const created  = u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : 'Unknown';
+    const isSelf   = u.id === currentUserId;
+    const adminBadge = u.isAdmin ? '<span class="admin-badge-admin">Admin</span>' : '';
+    const selfNote   = isSelf ? '<span style="font-size:10px;color:var(--text-muted)">(you)</span>' : '';
+    const resetBtn   = !isSelf
+      ? `<button class="admin-action-btn reset" onclick="openAdminReset('${u.id}')">Reset PIN</button>`
+      : '';
+    const deleteBtn  = !isSelf
+      ? `<button class="admin-action-btn delete" onclick="adminDeleteUser('${u.id}')">Delete</button>`
+      : '';
+    return `
+      <div class="admin-user-row" id="admin-row-${u.id}">
+        <div class="admin-user-avatar" style="background:${u.color || '#7C6FFF'}">${initials}</div>
+        <div class="admin-user-info">
+          <div class="admin-user-name">${u.userId} ${adminBadge} ${selfNote}</div>
+          <div class="admin-user-meta">Joined: ${created} &nbsp;·&nbsp; ID: ${u.id.slice(0,10)}…</div>
+        </div>
+        <div class="admin-user-actions">${resetBtn}${deleteBtn}</div>
+      </div>`;
+  }).join('');
+}
+
+// ── Admin delete user ──
+function adminDeleteUser(targetId) {
+  const users = loadUsers();
+  const target = users.find(u => u.id === targetId);
+  if (!target) return;
+  if (target.isAdmin) { alert('Cannot delete an admin account.'); return; }
+  if (!confirm(`Delete user "${target.userId}"?\nAll their data will be permanently removed.`)) return;
+  const updated = users.filter(u => u.id !== targetId);
+  saveUsers(updated);
+  // Remove all their localStorage keys
+  [`st_data_${targetId}`,`st_pin_${targetId}`,`st_token_${targetId}`,`st_gist_${targetId}`,`st_synced_${targetId}`]
+    .forEach(k => localStorage.removeItem(k));
+  renderAdminPanel();
+}
+
+// ── Admin Reset PIN ──
+let arTargetId   = null;
+let arBuf        = '';
+let arFirst      = '';
+let arStep       = 'new'; // 'new' | 'confirm'
+
+function openAdminReset(targetId) {
+  const users = loadUsers();
+  const target = users.find(u => u.id === targetId);
+  if (!target) return;
+  arTargetId = targetId;
+  arBuf = ''; arFirst = ''; arStep = 'new';
+  document.getElementById('admin-reset-username').textContent = target.userId;
+  document.getElementById('admin-reset-step-label').textContent = 'Enter new PIN (4–6 digits)';
+  document.getElementById('admin-reset-error').textContent = '';
+  renderArDots();
+  document.getElementById('admin-reset-overlay').classList.add('open');
+}
+
+function closeAdminReset() {
+  document.getElementById('admin-reset-overlay').classList.remove('open');
+  arTargetId = null; arBuf = ''; arFirst = ''; arStep = 'new';
+}
+
+function adminResetOverlayClick(e) {
+  if (e.target === document.getElementById('admin-reset-overlay')) closeAdminReset();
+}
+
+function renderArDots() {
+  const el = document.getElementById('admin-reset-dots');
+  if (!el) return;
+  el.innerHTML = Array.from({length:6},(_,i) =>
+    `<div class="pin-dot${i < arBuf.length ? ' filled' : ''}"></div>`
+  ).join('');
+}
+
+function arKey(n) { if (arBuf.length >= 6) return; arBuf += n; renderArDots(); }
+function arBack()  { arBuf = arBuf.slice(0,-1); renderArDots(); }
+
+async function arSubmit() {
+  const errEl = document.getElementById('admin-reset-error');
+  try {
+    if (arStep === 'new') {
+      if (arBuf.length < 4) { errEl.textContent = 'PIN must be at least 4 digits'; return; }
+      arFirst = arBuf; arBuf = ''; arStep = 'confirm';
+      renderArDots();
+      document.getElementById('admin-reset-step-label').textContent = 'Confirm new PIN';
+      errEl.textContent = '';
+      return;
+    }
+    if (arStep === 'confirm') {
+      if (arBuf !== arFirst) {
+        errEl.textContent = 'PINs do not match. Try again.';
+        arBuf = ''; arFirst = ''; arStep = 'new';
+        renderArDots();
+        document.getElementById('admin-reset-step-label').textContent = 'Enter new PIN (4–6 digits)';
+        return;
+      }
+      const hash  = await sha256(arBuf);
+      const users = loadUsers();
+      const idx   = users.findIndex(u => u.id === arTargetId);
+      if (idx < 0) { errEl.textContent = 'User not found'; return; }
+      users[idx].pinHash = hash;
+      saveUsers(users);
+      // Also update the per-user legacy pin key
+      localStorage.setItem(`st_pin_${arTargetId}`, hash);
+      closeAdminReset();
+      // Show brief success in admin panel
+      const row = document.getElementById(`admin-row-${arTargetId}`);
+      if (row) {
+        const orig = row.style.borderColor;
+        row.style.borderColor = 'var(--green)';
+        setTimeout(() => { row.style.borderColor = orig; }, 1500);
+      }
+    }
+  } catch(e) {
+    errEl.textContent = 'Error: ' + e.message;
+    console.error('arSubmit error:', e);
+  }
 }
 
 init();
 </script>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- ADMIN PANEL                                -->
+<!-- ══════════════════════════════════════════ -->
+<div id="admin-overlay" onclick="adminOverlayClick(event)">
+  <div class="admin-box">
+    <div class="admin-header">
+      <div>
+        <div class="admin-title">⚙ Admin Panel</div>
+        <div class="admin-subtitle">Super user — manage all accounts</div>
+      </div>
+      <button class="admin-close" onclick="closeAdminPanel()">✕</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="admin-stats">
+      <div class="admin-stat-card">
+        <div class="admin-stat-val" id="admin-stat-total">0</div>
+        <div class="admin-stat-label">Total Users</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-val" id="admin-stat-admin">0</div>
+        <div class="admin-stat-label">Admins</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-val" id="admin-stat-regular">0</div>
+        <div class="admin-stat-label">Regular Users</div>
+      </div>
+    </div>
+
+    <!-- User list -->
+    <div class="admin-section-title">All Users</div>
+    <div id="admin-user-list"></div>
+  </div>
+</div>
+
+<!-- Admin Reset PIN overlay -->
+<div id="admin-reset-overlay" onclick="adminResetOverlayClick(event)">
+  <div class="admin-reset-box">
+    <div class="admin-reset-title">Reset PIN</div>
+    <div class="admin-reset-sub">Set a new PIN for:</div>
+    <div class="admin-reset-for" id="admin-reset-username"></div>
+    <div id="admin-reset-step-label" style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Enter new PIN (4–6 digits)</div>
+    <div class="pin-dots" id="admin-reset-dots" style="justify-content:center;margin-bottom:6px;"></div>
+    <div class="pin-error" id="admin-reset-error" style="text-align:center;margin-bottom:10px;"></div>
+    <div class="pin-keypad">
+      <button class="pin-key" onclick="arKey('1')">1</button>
+      <button class="pin-key" onclick="arKey('2')">2</button>
+      <button class="pin-key" onclick="arKey('3')">3</button>
+      <button class="pin-key" onclick="arKey('4')">4</button>
+      <button class="pin-key" onclick="arKey('5')">5</button>
+      <button class="pin-key" onclick="arKey('6')">6</button>
+      <button class="pin-key" onclick="arKey('7')">7</button>
+      <button class="pin-key" onclick="arKey('8')">8</button>
+      <button class="pin-key" onclick="arKey('9')">9</button>
+      <button class="pin-key" onclick="arBack()">⌫</button>
+      <button class="pin-key" onclick="arKey('0')">0</button>
+      <button class="pin-key pin-ok" onclick="arSubmit()">OK</button>
+    </div>
+    <button class="login-link-btn" onclick="closeAdminReset()" style="margin-top:12px;">Cancel</button>
+  </div>
+</div>
+
 </body>
 </html>
