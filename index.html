@@ -1233,22 +1233,45 @@
 
     <!-- ── RESTORE FROM GIST VIEW ── -->
     <div id="restore-view" style="display:none">
-      <div style="font-size:13px;color:var(--text-muted);text-align:center;margin-bottom:16px;line-height:1.5">
-        Enter your GitHub Token &amp; Gist ID to restore your account on this device.
+
+      <!-- Step 1: Token + Gist ID -->
+      <div id="restore-step1">
+        <div style="font-size:13px;color:var(--text-muted);text-align:center;margin-bottom:16px;line-height:1.5">
+          Enter your GitHub Token &amp; Gist ID.<br>You will verify your PIN next.
+        </div>
+        <div class="restore-field-group">
+          <label class="login-field-label">GitHub Token</label>
+          <input class="restore-input" id="restore-token" type="password" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off" />
+        </div>
+        <div class="restore-field-group">
+          <label class="login-field-label">Gist ID</label>
+          <input class="restore-input" id="restore-gist" type="text" placeholder="e.g. 3a4b5c6d7e8f..." autocomplete="off" spellcheck="false" />
+        </div>
+        <div class="restore-error" id="restore-error"></div>
+        <button class="restore-btn" onclick="restoreFromGist()">Next →</button>
+        <div class="login-footer" style="margin-top:16px">
+          <button class="login-link-btn" onclick="showLoginView()">← Back to Login</button>
+        </div>
       </div>
-      <div class="restore-field-group">
-        <label class="login-field-label">GitHub Token</label>
-        <input class="restore-input" id="restore-token" type="password" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off" />
+
+      <!-- Step 2: PIN verification (shown after Gist fetch succeeds) -->
+      <div id="restore-step2" style="display:none">
+        <div id="restore-user-badge" style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:16px"></div>
+        <div style="font-size:12px;color:var(--text-muted);text-align:center;margin-bottom:12px">Enter your PIN to verify identity</div>
+        <div class="pin-dots" id="restore-pin-dots" style="justify-content:center;margin-bottom:6px"></div>
+        <div class="restore-error" id="restore-pin-error" style="text-align:center;margin-bottom:8px"></div>
+        <div class="pin-keypad">
+          <button class="pin-key" onclick="rvKey('1')">1</button><button class="pin-key" onclick="rvKey('2')">2</button><button class="pin-key" onclick="rvKey('3')">3</button>
+          <button class="pin-key" onclick="rvKey('4')">4</button><button class="pin-key" onclick="rvKey('5')">5</button><button class="pin-key" onclick="rvKey('6')">6</button>
+          <button class="pin-key" onclick="rvKey('7')">7</button><button class="pin-key" onclick="rvKey('8')">8</button><button class="pin-key" onclick="rvKey('9')">9</button>
+          <button class="pin-key del" onclick="rvBack()">⌫</button><button class="pin-key" onclick="rvKey('0')">0</button>
+          <button class="pin-key confirm" onclick="rvSubmit()">OK</button>
+        </div>
+        <div class="login-footer" style="margin-top:16px">
+          <button class="login-link-btn" onclick="cancelRestoreVerify()">← Back</button>
+        </div>
       </div>
-      <div class="restore-field-group">
-        <label class="login-field-label">Gist ID</label>
-        <input class="restore-input" id="restore-gist" type="text" placeholder="e.g. 3a4b5c6d7e8f..." autocomplete="off" spellcheck="false" />
-      </div>
-      <div class="restore-error" id="restore-error"></div>
-      <button class="restore-btn" onclick="restoreFromGist()">Restore Account</button>
-      <div class="login-footer" style="margin-top:16px">
-        <button class="login-link-btn" onclick="showLoginView()">← Back to Login</button>
-      </div>
+
     </div>
 
     <!-- ── REGISTER VIEW ── -->
@@ -1874,7 +1897,9 @@ function setUserContext(userId) {
 // ────────────────────────────────────────────
 // LOGIN SYSTEM
 // ────────────────────────────────────────────
-let loginBuf  = '';
+let loginBuf      = '';
+let loginAttempts = 0;
+let loginLockUntil = 0;
 let regBuf    = '';
 let regStep   = 'pin';   // 'pin' | 'confirm'
 let regFirst  = '';
@@ -1905,9 +1930,13 @@ function showRestoreView() {
   document.getElementById('login-view').style.display = 'none';
   document.getElementById('register-view').style.display = 'none';
   document.getElementById('restore-view').style.display = '';
+  document.getElementById('restore-step1').style.display = '';
+  document.getElementById('restore-step2').style.display = 'none';
   document.getElementById('restore-error').textContent = '';
   document.getElementById('restore-token').value = '';
   document.getElementById('restore-gist').value = '';
+  restorePending = null; restorePinBuf = '';
+  restoreAttempts = 0; restoreLockUntil = 0;
   document.getElementById('restore-token').focus();
 }
 
@@ -1948,18 +1977,35 @@ async function lSubmit() {
   const errEl   = document.getElementById('login-error');
   if (!uid_val)            { errEl.textContent = 'Enter your User ID'; return; }
   if (loginBuf.length < 4) { errEl.textContent = 'PIN must be at least 4 digits'; return; }
+
+  // Brute-force lockout
+  if (Date.now() < loginLockUntil) {
+    const secs = Math.ceil((loginLockUntil - Date.now()) / 1000);
+    errEl.textContent = `Too many attempts. Wait ${secs}s`;
+    loginBuf = ''; renderLoginDots();
+    return;
+  }
+
   try {
     const users = loadUsers();
     const user  = users.find(u => u.userId && u.userId.toLowerCase() === uid_val.toLowerCase());
     const hash  = await sha256(loginBuf);
     if (!user || user.pinHash !== hash) {
-      errEl.textContent = 'Invalid User ID or PIN';
+      loginAttempts++;
       loginBuf = ''; renderLoginDots();
       const dots = document.getElementById('login-dots');
       dots.querySelectorAll('.pin-dot').forEach(d => { d.classList.add('error'); setTimeout(()=>d.classList.remove('error'),600); });
+      if (loginAttempts >= 5) {
+        loginLockUntil = Date.now() + 30000;
+        loginAttempts  = 0;
+        errEl.textContent = 'Too many failed attempts. Locked for 30 seconds.';
+      } else {
+        errEl.textContent = `Invalid User ID or PIN. ${5 - loginAttempts} attempt${5-loginAttempts===1?'':'s'} left.`;
+      }
       return;
     }
-    // Success
+    // Success — reset counter
+    loginAttempts = 0; loginLockUntil = 0;
     setUserContext(user.id);
     document.getElementById('login-overlay').style.display = 'none';
     updateNavUser();
@@ -2641,7 +2687,12 @@ async function manualSync() {
   showToast('Manual sync complete', 'success');
 }
 
-// ── RESTORE FROM GIST (cross-device login) ──
+// ── RESTORE FROM GIST — Step 1: fetch & validate only, NO login yet ──
+let restorePending   = null; // holds { token, gistId, meta, data } until PIN verified
+let restorePinBuf    = '';
+let restoreAttempts  = 0;
+let restoreLockUntil = 0;
+
 async function restoreFromGist() {
   const token  = document.getElementById('restore-token').value.trim();
   const gistId = document.getElementById('restore-gist').value.trim();
@@ -2660,25 +2711,96 @@ async function restoreFromGist() {
     if (res.status === 404) { errEl.textContent = 'Gist not found — check the Gist ID'; return; }
     if (!res.ok) { errEl.textContent = `GitHub error: HTTP ${res.status}`; return; }
 
-    const gist    = await res.json();
-    const file    = gist.files['shantracks_data.json'] || gist.files['fintrack_data.json'];
+    const gist   = await res.json();
+    const file   = gist.files['shantracks_data.json'] || gist.files['fintrack_data.json'];
     if (!file) { errEl.textContent = 'No ShanTracks data found in this Gist'; return; }
 
-    const parsed  = JSON.parse(file.content);
-    const meta    = parsed._meta || null;
-    const data    = parsed.data  || parsed; // handle old format
+    const parsed = JSON.parse(file.content);
+    const meta   = parsed._meta || null;
+    const data   = parsed.data  || parsed;
 
     if (!meta || !meta.userId || !meta.pinHash) {
-      errEl.textContent = 'Gist has no user profile — sync from original device first, then try again';
+      errEl.textContent = 'Gist has no user identity — sync once from your original device first';
       return;
     }
 
-    // Create or update user in local registry
-    const users   = loadUsers();
-    let existing  = users.find(u => u.userId.toLowerCase() === meta.userId.toLowerCase());
+    // Store pending — nothing saved to localStorage yet
+    restorePending  = { token, gistId, meta, data };
+    restorePinBuf   = '';
+    restoreAttempts = 0;
+    restoreLockUntil = 0;
+
+    // Show PIN verification step
+    document.getElementById('restore-step1').style.display = 'none';
+    document.getElementById('restore-step2').style.display = '';
+    const badge = document.getElementById('restore-user-badge');
+    badge.innerHTML = `
+      <div style="width:38px;height:38px;border-radius:50%;background:${meta.color||'#7C6FFF'};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">${getUserInitials(meta.userId)}</div>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:var(--text)">${meta.userId}</div>
+        <div style="font-size:11px;color:var(--text-muted)">Prove it's you</div>
+      </div>`;
+    renderRvDots();
+    errEl.textContent = '';
+
+  } catch(e) {
+    errEl.textContent = 'Error: ' + e.message;
+    console.error('restoreFromGist error:', e);
+  }
+}
+
+function cancelRestoreVerify() {
+  restorePending = null; restorePinBuf = '';
+  document.getElementById('restore-step2').style.display = 'none';
+  document.getElementById('restore-step1').style.display = '';
+  document.getElementById('restore-error').textContent = '';
+}
+
+function renderRvDots() {
+  const el = document.getElementById('restore-pin-dots');
+  if (!el) return;
+  el.innerHTML = Array.from({length:6}, (_,i) =>
+    `<div class="pin-dot${i < restorePinBuf.length ? ' filled' : ''}"></div>`
+  ).join('');
+}
+function rvKey(n) { if (restorePinBuf.length >= 6) return; restorePinBuf += n; renderRvDots(); }
+function rvBack()  { restorePinBuf = restorePinBuf.slice(0,-1); renderRvDots(); }
+
+async function rvSubmit() {
+  const errEl = document.getElementById('restore-pin-error');
+  if (!restorePending) { errEl.textContent = 'Session expired. Start again.'; return; }
+
+  // Brute-force lockout
+  if (Date.now() < restoreLockUntil) {
+    const secs = Math.ceil((restoreLockUntil - Date.now()) / 1000);
+    errEl.textContent = `Too many attempts. Wait ${secs}s`;
+    return;
+  }
+  if (restorePinBuf.length < 4) { errEl.textContent = 'PIN must be at least 4 digits'; return; }
+
+  try {
+    const hash = await sha256(restorePinBuf);
+    if (hash !== restorePending.meta.pinHash) {
+      restoreAttempts++;
+      restorePinBuf = ''; renderRvDots();
+      if (restoreAttempts >= 5) {
+        restoreLockUntil = Date.now() + 30000;
+        restoreAttempts  = 0;
+        errEl.textContent = 'Too many wrong PINs. Locked for 30 seconds.';
+      } else {
+        errEl.textContent = `Wrong PIN. ${5 - restoreAttempts} attempt${5-restoreAttempts===1?'':'s'} left.`;
+      }
+      return;
+    }
+
+    // PIN correct — NOW save everything and log in
+    const { token, gistId, meta, data } = restorePending;
+    restorePending = null;
+
+    const users    = loadUsers();
+    let existing   = users.find(u => u.userId && u.userId.toLowerCase() === meta.userId.toLowerCase());
     let userId;
     if (existing) {
-      // Update pinHash in case it changed
       existing.pinHash = meta.pinHash;
       if (meta.color) existing.color = meta.color;
       saveUsers(users);
@@ -2694,21 +2816,19 @@ async function restoreFromGist() {
       userId = newUser.id;
     }
 
-    // Save token + gist under this user's keys
     setUserContext(userId);
     localStorage.setItem(LS_TOKEN, token);
     localStorage.setItem(LS_GIST, gistId);
     localStorage.setItem(LS_DATA, JSON.stringify(data));
 
-    // Log in
     document.getElementById('login-overlay').style.display = 'none';
     updateNavUser();
     unlockApp();
-    showToast(`Welcome back, ${meta.userId}! Data restored from Gist.`, 'success');
+    showToast(`Welcome back, ${meta.userId}! Restored from Gist.`, 'success');
 
   } catch(e) {
     errEl.textContent = 'Error: ' + e.message;
-    console.error('restoreFromGist error:', e);
+    console.error('rvSubmit error:', e);
   }
 }
 
