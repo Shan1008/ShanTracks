@@ -1234,10 +1234,14 @@
     <!-- ── RESTORE FROM GIST VIEW ── -->
     <div id="restore-view" style="display:none">
 
-      <!-- Step 1: Token + Gist ID -->
+      <!-- Step 1: Token + Gist ID + User ID -->
       <div id="restore-step1">
         <div style="font-size:13px;color:var(--text-muted);text-align:center;margin-bottom:16px;line-height:1.5">
-          Enter your GitHub Token &amp; Gist ID.<br>You will verify your PIN next.
+          Enter your credentials to restore your account on this device.
+        </div>
+        <div class="restore-field-group">
+          <label class="login-field-label">Your User ID</label>
+          <input class="restore-input" id="restore-userid" type="text" placeholder="e.g. Shan@280" autocomplete="off" spellcheck="false" />
         </div>
         <div class="restore-field-group">
           <label class="login-field-label">GitHub Token</label>
@@ -1722,9 +1726,9 @@
               <div class="accordion-step">2. Click <strong>Generate new token (classic)</strong>. Give it a name like "ShanTracks".</div>
               <div class="accordion-step">3. Under scopes, check only <code>gist</code>. Set expiry to No expiration.</div>
               <div class="accordion-step">4. Copy the token (starts with <code>ghp_</code>) and paste above.</div>
-              <div class="accordion-step">5. Go to <strong>gist.github.com</strong> → Create a new <em>secret</em> gist. Filename: <code>fintrack_data.json</code>, content: <code>{}</code></div>
+              <div class="accordion-step">5. Go to <strong>gist.github.com</strong> → Create a new <em>secret</em> gist. Filename: <code>shantracks_init.json</code>, content: <code>{}</code>. Multiple users can share one Gist — each gets their own file automatically.</div>
               <div class="accordion-step">6. Copy the Gist ID from the URL (the hash after your username) and paste above.</div>
-              <div class="accordion-step">7. Click <strong>Save & Connect</strong>. Your data will sync automatically on every change.</div>
+              <div class="accordion-step">7. Click <strong>Save &amp; Connect</strong>. Your data syncs to <code>shantracks_YourUserID.json</code> inside the Gist.</div>
             </div>
           </div>
         </div>
@@ -1933,11 +1937,12 @@ function showRestoreView() {
   document.getElementById('restore-step1').style.display = '';
   document.getElementById('restore-step2').style.display = 'none';
   document.getElementById('restore-error').textContent = '';
+  document.getElementById('restore-userid').value = '';
   document.getElementById('restore-token').value = '';
   document.getElementById('restore-gist').value = '';
   restorePending = null; restorePinBuf = '';
   restoreAttempts = 0; restoreLockUntil = 0;
-  document.getElementById('restore-token').focus();
+  document.getElementById('restore-userid').focus();
 }
 
 function loginClearError() { document.getElementById('login-error').textContent = ''; }
@@ -2541,6 +2546,13 @@ function getSyncCreds() {
   };
 }
 
+// Each user gets their own file inside the Gist: shantracks_<userId>.json
+// This lets multiple users share one Gist without overwriting each other
+function gistFilename(userId) {
+  const safe = (userId || 'user').replace(/[^a-zA-Z0-9_-]/g, '_');
+  return `shantracks_${safe}.json`;
+}
+
 function setSyncStatus(state, label) {
   const dot = document.getElementById('sync-dot');
   const lbl = document.getElementById('sync-label');
@@ -2579,7 +2591,7 @@ async function pushToGist(data) {
         'Accept': 'application/vnd.github.v3+json'
       },
       body: JSON.stringify({
-        files: { 'shantracks_data.json': { content: JSON.stringify(payload, null, 2) } }
+        files: { [gistFilename(me ? me.userId : 'user')]: { content: JSON.stringify(payload, null, 2) } }
       })
     });
     if (res.status === 401) throw new Error('Token invalid or expired — create a new classic token (ghp_...)');
@@ -2604,20 +2616,20 @@ async function pullFromGist() {
   if (!token || !gistId) return null;
   try {
     const res = await fetch(`https://api.github.com/gists/${gistId}`, {
-      headers: {
-        'Authorization': `token ${token}`,
-        'Accept': 'application/vnd.github.v3+json'
-      }
+      headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const gist = await res.json();
-    const file = gist.files['shantracks_data.json'] || gist.files['fintrack_data.json'];
+    // Try per-user file first, then fall back to legacy filenames
+    const users  = loadUsers();
+    const me     = currentUserId ? users.find(u => u.id === currentUserId) : null;
+    const file   = (me ? gist.files[gistFilename(me.userId)] : null)
+                 || gist.files['shantracks_data.json']
+                 || gist.files['fintrack_data.json'];
     if (!file) return null;
     const parsed = JSON.parse(file.content);
-    // New wrapped format: { _meta, data }
-    // Old raw format: directly the appData object
     if (parsed && parsed._meta && parsed.data) return parsed;
-    return { _meta: null, data: parsed }; // wrap old format
+    return { _meta: null, data: parsed };
   } catch(e) {
     setSyncStatus('error', 'Pull failed');
     return null;
@@ -2694,11 +2706,13 @@ let restoreAttempts  = 0;
 let restoreLockUntil = 0;
 
 async function restoreFromGist() {
+  const userId = document.getElementById('restore-userid').value.trim();
   const token  = document.getElementById('restore-token').value.trim();
   const gistId = document.getElementById('restore-gist').value.trim();
   const errEl  = document.getElementById('restore-error');
   errEl.textContent = '';
 
+  if (!userId) { errEl.textContent = 'Enter your User ID'; return; }
   if (!token)  { errEl.textContent = 'Enter your GitHub Token'; return; }
   if (!gistId) { errEl.textContent = 'Enter your Gist ID'; return; }
 
@@ -2711,9 +2725,19 @@ async function restoreFromGist() {
     if (res.status === 404) { errEl.textContent = 'Gist not found — check the Gist ID'; return; }
     if (!res.ok) { errEl.textContent = `GitHub error: HTTP ${res.status}`; return; }
 
-    const gist   = await res.json();
-    const file   = gist.files['shantracks_data.json'] || gist.files['fintrack_data.json'];
-    if (!file) { errEl.textContent = 'No ShanTracks data found in this Gist'; return; }
+    const gist     = await res.json();
+    // Look for this user's specific file first, then legacy fallbacks
+    const userFile = gistFilename(userId);
+    const file     = gist.files[userFile]
+                   || gist.files['shantracks_data.json']
+                   || gist.files['fintrack_data.json'];
+    if (!file) {
+      const found = Object.keys(gist.files).filter(f => f.startsWith('shantracks_')).join(', ');
+      errEl.textContent = found
+        ? `No file for "${userId}" in this Gist. Found: ${found}`
+        : 'No ShanTracks data found in this Gist';
+      return;
+    }
 
     const parsed = JSON.parse(file.content);
     const meta   = parsed._meta || null;
@@ -4760,8 +4784,10 @@ async function diagnoseSyncIssue() {
     const gist = await gistRes.json();
     const files = Object.keys(gist.files).join(', ');
     log('✅', `Gist accessible — files inside: ${files || '(empty)'}`);
-    const hasFile = !!(gist.files['shantracks_data.json'] || gist.files['fintrack_data.json']);
-    log(hasFile ? '✅' : '⚠️', hasFile ? 'Data file found in Gist — ready to sync!' : 'Data file missing — click Test Connection to create it');
+    const users = loadUsers(); const me = currentUserId ? users.find(u => u.id === currentUserId) : null;
+    const myFile = me ? gistFilename(me.userId) : 'shantracks_data.json';
+    const hasFile = !!(gist.files[myFile] || gist.files['shantracks_data.json'] || gist.files['fintrack_data.json']);
+    log(hasFile ? '✅' : '⚠️', hasFile ? `Data file found (${myFile}) — ready to sync!` : `Data file missing — click Test Connection to create it`);
   } catch(e) {
     log('❌', 'Gist access failed: ' + e.message);
     return;
@@ -4783,14 +4809,16 @@ async function testGistConnection() {
     if (res.status === 403) throw new Error('Token lacks gist scope — regenerate with "gist" scope');
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const gist = await res.json();
-    const hasFile = !!(gist.files['shantracks_data.json'] || gist.files['fintrack_data.json']);
+    const users2 = loadUsers(); const me2 = currentUserId ? users2.find(u => u.id === currentUserId) : null;
+    const myFilename = me2 ? gistFilename(me2.userId) : 'shantracks_data.json';
+    const hasFile = !!(gist.files[myFilename] || gist.files['shantracks_data.json'] || gist.files['fintrack_data.json']);
 
     if (!hasFile) {
-      // First-time setup: create the file inside the Gist automatically
+      // First-time setup: create the user's specific file inside the Gist
       const init = await fetch(`https://api.github.com/gists/${gistId}`, {
         method: 'PATCH',
         headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' },
-        body: JSON.stringify({ files: { 'shantracks_data.json': { content: JSON.stringify({}) } } })
+        body: JSON.stringify({ files: { [myFilename]: { content: JSON.stringify({}) } } })
       });
       if (init.status === 401) throw new Error('Token invalid — use a classic token starting with ghp_');
       if (init.status === 403) throw new Error('Token missing gist scope — regenerate token with gist scope checked');
