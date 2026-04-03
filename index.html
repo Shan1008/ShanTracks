@@ -715,6 +715,22 @@
     .expenses-grid { grid-template-columns: 1fr; }
     .settings-grid { grid-template-columns: 1fr; }
     #toast-container { bottom: 90px; }
+    /* Bigger tap targets on mobile */
+    .action-btn { width: 36px !important; height: 36px !important; font-size: 14px !important; border-radius: 10px !important; }
+  }
+  @media (max-width: 600px) {
+    /* Stack account + bills tables vertically */
+    .dashboard-tables { grid-template-columns: 1fr !important; }
+    .dashboard-bottom { grid-template-columns: 1fr !important; }
+    /* Tables scroll horizontally if content overflows */
+    .table-card, .card { overflow-x: auto; }
+    table { min-width: 320px; }
+    /* Subheader full width each */
+    .subheader-row { grid-template-columns: 1fr !important; gap: 8px; }
+    .balance-amount { font-size: 26px; }
+    /* Expense row layout tighter */
+    .exp-row-amount { font-size: 13px; }
+    .exp-row-desc { font-size: 13px; }
   }
 
   /* ── DASHBOARD TWO-TABLE ROW ── */
@@ -868,7 +884,7 @@
   .exp-row-info { flex: 1; min-width: 0; }
   .exp-row-desc { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .exp-row-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-  .exp-row-right { text-align: right; flex-shrink: 0; }
+  .exp-row-right { text-align: right; flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
   .exp-row-amount { font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 600; color: var(--red); }
   .exp-row-date { font-size: 11px; color: var(--text-muted); margin-top: 2px; font-family: 'DM Mono', monospace; }
   .exp-recurring-badge {
@@ -1093,6 +1109,291 @@
     .settings-grid-v2 { grid-template-columns: 1fr; }
   }
 
+  /* ── BILL DUE BADGES ── */
+  .due-badge {
+    display: inline-block;
+    font-size: 9.5px; font-weight: 700; letter-spacing: 0.4px;
+    padding: 2px 7px; border-radius: 100px;
+    margin-left: 6px; vertical-align: middle; text-transform: uppercase;
+  }
+  .due-badge.overdue  { background: rgba(239,68,68,0.18);  color: #f87171; border: 1px solid rgba(239,68,68,0.35); }
+  .due-badge.due-today { background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid rgba(245,158,11,0.4); }
+  .due-badge.due-soon  { background: rgba(251,146,60,0.18); color: #fb923c; border: 1px solid rgba(251,146,60,0.35); }
+  .due-badge.due-week  { background: rgba(96,165,250,0.14); color: #93c5fd; border: 1px solid rgba(96,165,250,0.3); }
+
+  /* ── PAYMENT METHOD BADGES ── */
+  .pm-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 600;
+    padding: 1px 6px; border-radius: 100px; vertical-align: middle; }
+  .pm-upi          { background: rgba(139,92,246,0.15); color: #a78bfa; }
+  .pm-cash         { background: rgba(16,185,129,0.15); color: #6ee7b7; }
+  .pm-card         { background: rgba(59,130,246,0.15); color: #93c5fd; }
+  .pm-banktransfer { background: rgba(245,158,11,0.15); color: #fcd34d; }
+
+  /* ── NOTES SEARCH ── */
+  .notes-search-wrap { padding: 8px 12px 0; }
+  .notes-search-inp  { width: 100%; box-sizing: border-box; border-radius: 8px; padding: 7px 12px;
+    border: 1px solid var(--border); background: var(--bg); color: var(--text);
+    font-size: 13px; font-family: inherit; }
+  .notes-search-inp:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(124,111,255,0.15); }
+
+  /* ── EXPENSE DELETE BUTTON ── */
+  .exp-del-btn { margin-top: 4px; opacity: 0.55; flex-shrink: 0; }
+  .exp-del-btn:hover { opacity: 1; }
+
+  /* ── GOLD NW LABEL ── */
+  .gold-nw-label { display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; }
+  .gold-nw-label input { cursor: pointer; accent-color: var(--accent); width: 14px; height: 14px; }
+  .gold-nw-text { font-size: 8.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-muted); }
+  .gold-nw-label:has(input:checked) .gold-nw-text { color: var(--gold); }
+
+  /* ── PREMIUM UI OVERHAUL ── */
+
+  /* Nav */
+  .top-nav {
+    background: rgba(15,17,25,0.82) !important;
+    backdrop-filter: blur(24px) saturate(1.6) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(1.6) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.04), 0 4px 32px rgba(0,0,0,0.4) !important;
+  }
+  .nav-logo {
+    background: linear-gradient(135deg, #a78bfa, #60a5fa, #34d399) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.5px !important;
+  }
+  .nav-tab {
+    position: relative;
+    font-weight: 500 !important;
+    letter-spacing: 0.2px !important;
+    transition: color 0.2s, opacity 0.2s !important;
+  }
+  .nav-tab::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 50%; right: 50%;
+    height: 2px;
+    background: linear-gradient(90deg, #a78bfa, #60a5fa);
+    border-radius: 2px;
+    transition: left 0.25s ease, right 0.25s ease;
+  }
+  .nav-tab.active::after { left: 8px; right: 8px; }
+  .nav-tab.active {
+    color: #e2e8f0 !important;
+    font-weight: 700 !important;
+  }
+
+  /* Balance card hero */
+  .balance-card {
+    background: linear-gradient(135deg, #0f1725 0%, #141c30 50%, #0a1020 100%) !important;
+    border: 1px solid rgba(167,139,250,0.18) !important;
+    box-shadow:
+      0 0 0 1px rgba(167,139,250,0.08),
+      0 8px 40px rgba(0,0,0,0.5),
+      0 0 80px rgba(167,139,250,0.08) inset !important;
+    position: relative;
+    overflow: hidden;
+  }
+  .balance-card::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 220px; height: 220px;
+    background: radial-gradient(circle, rgba(167,139,250,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .balance-amount {
+    font-size: 48px !important;
+    font-weight: 800 !important;
+    letter-spacing: -1.5px !important;
+    line-height: 1.1 !important;
+    background: linear-gradient(135deg, #f1f5f9, #a78bfa) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+  }
+  .balance-amount.is-negative {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: var(--red) !important;
+    background-clip: unset !important;
+    color: var(--red) !important;
+  }
+
+  /* Subheader cards */
+  .subheader-card {
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border-radius: 14px !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+  }
+  .subheader-card:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3) !important;
+  }
+  .subheader-card.blue {
+    background: linear-gradient(135deg, rgba(96,165,250,0.12), rgba(139,92,246,0.08)) !important;
+    border: 1px solid rgba(96,165,250,0.22) !important;
+  }
+  .subheader-card.peach {
+    background: linear-gradient(135deg, rgba(251,146,60,0.12), rgba(249,168,212,0.08)) !important;
+    border: 1px solid rgba(251,146,60,0.22) !important;
+  }
+
+  /* Cards / Table cards */
+  .card, .table-card {
+    border-radius: 16px !important;
+    border: 1px solid rgba(255,255,255,0.07) !important;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.05) inset !important;
+    transition: box-shadow 0.2s ease !important;
+  }
+  .card:hover, .table-card:hover {
+    box-shadow: 0 4px 28px rgba(0,0,0,0.45), 0 1px 0 rgba(255,255,255,0.07) inset !important;
+  }
+  .card-title {
+    font-weight: 700 !important;
+    letter-spacing: 0.3px !important;
+    font-size: 13px !important;
+  }
+
+  /* Tables */
+  thead th {
+    font-size: 10.5px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.8px !important;
+    color: var(--text-muted) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+  }
+  tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.04) !important;
+    transition: background 0.15s ease !important;
+  }
+  tbody tr:hover {
+    background: rgba(167,139,250,0.06) !important;
+  }
+  tbody td {
+    font-size: 13px !important;
+  }
+
+  /* Type badges */
+  .type-badge {
+    border-radius: 100px !important;
+    padding: 3px 10px !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px !important;
+    text-transform: uppercase !important;
+  }
+
+  /* Buttons */
+  .btn {
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.3px !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease !important;
+  }
+  .btn:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.35) !important;
+  }
+  .btn:active { transform: translateY(0) !important; }
+  .btn-primary {
+    background: linear-gradient(135deg, #7c3aed, #6366f1) !important;
+    box-shadow: 0 2px 12px rgba(124,58,237,0.35) !important;
+  }
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #8b5cf6, #818cf8) !important;
+    box-shadow: 0 4px 20px rgba(124,58,237,0.5) !important;
+  }
+
+  /* Investment / salary row hover */
+  .inv-row, .salary-row {
+    border-radius: 8px !important;
+    transition: background 0.15s ease !important;
+  }
+  .inv-row:hover, .salary-row:hover {
+    background: rgba(167,139,250,0.07) !important;
+  }
+
+  /* Action buttons */
+  .action-btn {
+    border-radius: 8px !important;
+    transition: background 0.15s ease, transform 0.15s ease !important;
+  }
+  .action-btn:hover {
+    transform: scale(1.08) !important;
+  }
+  .add-row-btn {
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.3px !important;
+    transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease !important;
+  }
+  .add-row-btn:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3) !important;
+  }
+
+  /* Section headings / labels */
+  .section-label, .settings-label {
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    color: var(--text-muted) !important;
+  }
+
+  /* Net worth hero — gradient only when positive, red when negative */
+  .nw-hero-amount {
+    font-weight: 800 !important;
+    letter-spacing: -1px !important;
+  }
+  .nw-hero-amount.positive {
+    background: linear-gradient(135deg, #f1f5f9, #a78bfa) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+  }
+  .nw-hero-amount.negative {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: unset !important;
+    background-clip: unset !important;
+    color: var(--red) !important;
+  }
+  .nw-card {
+    border-radius: 16px !important;
+    border: 1px solid rgba(255,255,255,0.07) !important;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.35) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+  }
+  .nw-card:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 28px rgba(0,0,0,0.4) !important;
+  }
+
+  /* Inputs */
+  input[type="text"], input[type="number"], input[type="password"], select, textarea {
+    border-radius: 10px !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    background: rgba(255,255,255,0.04) !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+  }
+  input[type="text"]:focus, input[type="number"]:focus, input[type="password"]:focus, select:focus, textarea:focus {
+    outline: none !important;
+    border-color: rgba(167,139,250,0.5) !important;
+    box-shadow: 0 0 0 3px rgba(167,139,250,0.12) !important;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.22); }
+
   /* ── ADMIN PANEL ── */
   .admin-btn {
     display: none;
@@ -1175,6 +1476,65 @@
     background: #EF444422; color: #EF4444; border-color: #EF444466;
   }
   .admin-action-btn.delete:hover { background: #EF444444; border-color: #EF4444; }
+  .admin-action-btn.view {
+    background: #10B98122; color: #10B981; border-color: #10B98166;
+  }
+  .admin-action-btn.view:hover { background: #10B98144; border-color: #10B981; }
+
+  /* ── FUND MANAGER VIEW ── */
+  #fm-overlay {
+    display: none; position: fixed; inset: 0; z-index: 5000;
+    background: rgba(0,0,0,.8); backdrop-filter: blur(10px);
+    align-items: flex-start; justify-content: center;
+    padding: 20px; overflow-y: auto;
+  }
+  #fm-overlay.open { display: flex; }
+  .fm-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; width: 100%; max-width: 720px;
+    box-shadow: 0 32px 80px rgba(0,0,0,.7); margin: auto;
+  }
+  .fm-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 24px 28px 16px; border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; background: var(--card); border-radius: 20px 20px 0 0; z-index: 1;
+  }
+  .fm-user-info { display: flex; align-items: center; gap: 14px; }
+  .fm-avatar { width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .fm-username { font-size: 18px; font-weight: 700; color: var(--text); }
+  .fm-usermeta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .fm-close { background: none; border: none; color: var(--text-muted); font-size: 22px; cursor: pointer; padding: 4px 10px; border-radius: 8px; }
+  .fm-close:hover { background: var(--border); color: var(--text); }
+  .fm-body { padding: 24px 28px; display: flex; flex-direction: column; gap: 20px; }
+
+  /* NW hero */
+  .fm-nw-hero {
+    background: linear-gradient(135deg, var(--bg), var(--border));
+    border: 1px solid var(--border); border-radius: 16px; padding: 20px;
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; text-align: center;
+  }
+  .fm-nw-val { font-size: 22px; font-weight: 800; font-family: 'DM Mono', monospace; }
+  .fm-nw-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-top: 3px; }
+
+  /* Section card */
+  .fm-section { background: var(--bg); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .fm-section-title {
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--text-muted); padding: 10px 16px; border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,.02);
+  }
+  .fm-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 9px 16px; border-bottom: 1px solid rgba(42,42,56,.4); font-size: 13px;
+  }
+  .fm-row:last-child { border-bottom: none; }
+  .fm-row-label { color: var(--text-muted); }
+  .fm-row-val { font-family: 'DM Mono', monospace; font-weight: 600; color: var(--text); }
+  .fm-row-val.green { color: var(--green); }
+  .fm-row-val.red   { color: var(--red); }
+  .fm-row-val.gold  { color: var(--gold); }
+  .fm-row-val.accent{ color: var(--accent); }
+  .fm-empty { padding: 14px 16px; font-size: 12px; color: var(--text-muted); font-style: italic; }
 
   /* Admin Reset PIN modal */
   #admin-reset-overlay {
@@ -1372,7 +1732,7 @@
       <!-- Sub-header totals -->
       <div class="subheader-row" style="margin-bottom:16px">
         <div class="subheader-card blue">
-          <div class="subheader-title">Available &amp; Upcoming Funds</div>
+          <div class="subheader-title">Available &amp; Upcoming</div>
           <div class="subheader-amount" id="total-available-display">₹0</div>
         </div>
         <div class="subheader-card peach">
@@ -1387,7 +1747,7 @@
         <!-- LEFT: Available & Upcoming Funds -->
         <div class="table-card">
           <div class="card-header funds-card-header">
-            <span class="card-title">Available &amp; Upcoming Funds</span>
+            <span class="card-title">Available &amp; Upcoming</span>
           </div>
           <div class="table-wrap">
             <table>
@@ -1453,6 +1813,9 @@
         <div class="card-header notes-header">
           <span class="card-title">Notes</span>
           <button class="btn btn-primary" style="font-size:12px;padding:5px 14px" onclick="openNoteModal()">+ Add Note</button>
+        </div>
+        <div class="notes-search-wrap" id="notes-search-wrap" style="display:none">
+          <input type="text" class="notes-search-inp" id="notes-search-inp" placeholder="Search notes…" oninput="renderNotes()" />
         </div>
         <div id="notes-list" class="notes-list">
           <div class="empty-state" id="notes-empty">No notes yet</div>
@@ -1902,8 +2265,8 @@ function setUserContext(userId) {
 // LOGIN SYSTEM
 // ────────────────────────────────────────────
 let loginBuf      = '';
-let loginAttempts = 0;
-let loginLockUntil = 0;
+const loginAttempts  = {};   // keyed by userId.toLowerCase()
+const loginLockUntil = {};   // keyed by userId.toLowerCase()
 let regBuf    = '';
 let regStep   = 'pin';   // 'pin' | 'confirm'
 let regFirst  = '';
@@ -1983,9 +2346,10 @@ async function lSubmit() {
   if (!uid_val)            { errEl.textContent = 'Enter your User ID'; return; }
   if (loginBuf.length < 4) { errEl.textContent = 'PIN must be at least 4 digits'; return; }
 
-  // Brute-force lockout
-  if (Date.now() < loginLockUntil) {
-    const secs = Math.ceil((loginLockUntil - Date.now()) / 1000);
+  // Brute-force lockout — per user ID
+  const lKey = uid_val.toLowerCase();
+  if (Date.now() < (loginLockUntil[lKey] || 0)) {
+    const secs = Math.ceil(((loginLockUntil[lKey] || 0) - Date.now()) / 1000);
     errEl.textContent = `Too many attempts. Wait ${secs}s`;
     loginBuf = ''; renderLoginDots();
     return;
@@ -1993,24 +2357,25 @@ async function lSubmit() {
 
   try {
     const users = loadUsers();
-    const user  = users.find(u => u.userId && u.userId.toLowerCase() === uid_val.toLowerCase());
+    const user  = users.find(u => u.userId && u.userId.toLowerCase() === lKey);
     const hash  = await sha256(loginBuf);
     if (!user || user.pinHash !== hash) {
-      loginAttempts++;
+      loginAttempts[lKey] = (loginAttempts[lKey] || 0) + 1;
       loginBuf = ''; renderLoginDots();
       const dots = document.getElementById('login-dots');
       dots.querySelectorAll('.pin-dot').forEach(d => { d.classList.add('error'); setTimeout(()=>d.classList.remove('error'),600); });
-      if (loginAttempts >= 5) {
-        loginLockUntil = Date.now() + 30000;
-        loginAttempts  = 0;
+      if (loginAttempts[lKey] >= 5) {
+        loginLockUntil[lKey] = Date.now() + 30000;
+        loginAttempts[lKey]  = 0;
         errEl.textContent = 'Too many failed attempts. Locked for 30 seconds.';
       } else {
-        errEl.textContent = `Invalid User ID or PIN. ${5 - loginAttempts} attempt${5-loginAttempts===1?'':'s'} left.`;
+        const left = 5 - loginAttempts[lKey];
+        errEl.textContent = `Invalid User ID or PIN. ${left} attempt${left===1?'':'s'} left.`;
       }
       return;
     }
-    // Success — reset counter
-    loginAttempts = 0; loginLockUntil = 0;
+    // Success — reset counter for this user
+    loginAttempts[lKey] = 0; loginLockUntil[lKey] = 0;
     setUserContext(user.id);
     document.getElementById('login-overlay').style.display = 'none';
     updateNavUser();
@@ -2966,8 +3331,8 @@ function renderDashboardTotals() {
   document.getElementById('total-available-display').textContent = fmtINR(totalAvail);
   document.getElementById('total-bills-display').textContent    = fmtINR(totalBills);
   const balEl = document.getElementById('balance-display');
-  balEl.textContent  = fmtINR(net);
-  balEl.style.color  = net >= 0 ? 'var(--green)' : 'var(--red)';
+  balEl.textContent = fmtINR(net);
+  balEl.classList.toggle('is-negative', net < 0);
 }
 
 function addAccount(type) {
@@ -2997,12 +3362,23 @@ function renderBillsTable() {
   if (!tbody) return;
   tbody.innerHTML = '';
   const bills = appData.bills || [];
+  const _today = new Date(); _today.setHours(0,0,0,0);
   bills.forEach(bill => {
+    // Compute due badge
+    let dueBadge = '';
+    if (bill.dueDate) {
+      const due = new Date(bill.dueDate); due.setHours(0,0,0,0);
+      const diff = Math.round((due - _today) / 86400000);
+      if (diff < 0)       dueBadge = `<span class="due-badge overdue">Overdue ${Math.abs(diff)}d</span>`;
+      else if (diff === 0) dueBadge = `<span class="due-badge due-today">Due Today</span>`;
+      else if (diff <= 3)  dueBadge = `<span class="due-badge due-soon">In ${diff}d</span>`;
+      else if (diff <= 7)  dueBadge = `<span class="due-badge due-week">In ${diff}d</span>`;
+    }
     const tr = document.createElement('tr');
     tr.className = 'row-recv';
     tr.dataset.id = bill.id;
     tr.innerHTML = `
-      <td><span class="bill-editable" data-field="name" data-id="${bill.id}" style="font-family:inherit;cursor:pointer;border-radius:4px;padding:2px 4px;transition:background 0.15s">${bill.name || '—'}</span></td>
+      <td><span class="bill-editable" data-field="name" data-id="${bill.id}" style="font-family:inherit;cursor:pointer;border-radius:4px;padding:2px 4px;transition:background 0.15s">${bill.name || '—'}</span>${dueBadge}</td>
       <td><span class="bill-editable" data-field="amount" data-id="${bill.id}" style="font-family:'DM Mono',monospace;cursor:pointer;border-radius:4px;padding:2px 4px;transition:background 0.15s">${bill.amount ? fmtINR(bill.amount) : '—'}</span></td>
       <td><span class="bill-editable" data-field="dueDate" data-id="${bill.id}" style="font-family:'DM Mono',monospace;cursor:pointer;border-radius:4px;padding:2px 4px;transition:background 0.15s">${bill.dueDate || '—'}</span></td>
       <td>
@@ -3080,13 +3456,23 @@ function deleteBill(id) {
 // NOTES
 // ────────────────────────────────────────────
 function renderNotes() {
-  const list  = document.getElementById('notes-list');
-  const empty = document.getElementById('notes-empty');
+  const list       = document.getElementById('notes-list');
+  const empty      = document.getElementById('notes-empty');
+  const searchWrap = document.getElementById('notes-search-wrap');
+  const searchInp  = document.getElementById('notes-search-inp');
   if (!list) return;
   // Remove existing note cards (keep the empty placeholder)
   [...list.querySelectorAll('.note-card')].forEach(el => el.remove());
 
-  const notes = appData.notes || [];
+  const allNotes = appData.notes || [];
+  // Show/hide search bar
+  if (searchWrap) searchWrap.style.display = allNotes.length > 1 ? '' : 'none';
+
+  const query = (searchInp ? searchInp.value : '').trim().toLowerCase();
+  const notes = query
+    ? allNotes.filter(n => (n.text || '').toLowerCase().includes(query))
+    : allNotes;
+
   if (empty) empty.style.display = notes.length ? 'none' : '';
 
   notes.slice().reverse().forEach(note => {
@@ -3363,12 +3749,13 @@ function renderSalaryMetrics() {
   const monthsToRun = monthlyExpense > 0 ? netWorth / monthlyExpense : 0;
 
   // Helper: render one salary row
-  const addRow = (label, valueStr, isAuto, field, isDeletable, extraId) => {
+  const addRow = (label, valueStr, isAuto, field, isDeletable, extraId, colorOverride) => {
     const row = document.createElement('div');
     row.className = 'salary-row';
     const valEl = document.createElement('span');
     valEl.className = 'salary-value' + (isAuto ? ' auto' : '');
     valEl.textContent = valueStr;
+    if (colorOverride) valEl.style.color = colorOverride;
     if (!isAuto && field) valEl.onclick = () => editSalaryRow(field, valEl);
     if (isDeletable) {
       const delBtn = document.createElement('button');
@@ -3390,9 +3777,9 @@ function renderSalaryMetrics() {
   };
 
   addRow('Monthly Salary',   fmtINR(monthly),                        false, 'monthly',        false);
-  addRow('NW Ratio',         fmtMultiplier(ratio * 100),             true,  null,             false);
+  addRow('NW Ratio',         fmtMultiplier(ratio * 100),             true,  null,             false, null, ratio < 0 ? 'var(--red)' : undefined);
   addRow('Monthly Expense',  fmtINR(monthlyExpense),                 false, 'monthlyExpense', false);
-  addRow('Months to Run',    monthsToRun.toFixed(1) + ' mo',         true,  null,             false);
+  addRow('Months to Run',    monthsToRun.toFixed(1) + ' mo',         true,  null,             false, null, monthsToRun < 0 ? 'var(--red)' : undefined);
 
   // Extra custom rows
   (sal.extra || []).forEach(item => {
@@ -3515,6 +3902,12 @@ const EXP_CATS = [
 const CAT_ICONS = Object.fromEntries(EXP_CATS.map(c => [c.id, c.icon]));
 function getCatIcon(id) { return CAT_ICONS[id] || '📌'; }
 function getCatLabel(id) { const c = EXP_CATS.find(x => x.id === id); return c ? c.label : id; }
+function getPayMethodBadge(method) {
+  if (!method) return '';
+  const map = { 'UPI': ['pm-upi','📱'], 'Cash': ['pm-cash','💵'], 'Card': ['pm-card','💳'], 'Bank Transfer': ['pm-banktransfer','🏦'] };
+  const [cls, icon] = map[method] || ['pm-card','💳'];
+  return `<span class="pm-badge ${cls}">${icon} ${method}</span>`;
+}
 
 function getCurrentMonthStr() {
   const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
@@ -3845,11 +4238,12 @@ function renderExpenseList(exps) {
       <div class="exp-row-icon">${getCatIcon(exp.category)}</div>
       <div class="exp-row-info">
         <div class="exp-row-desc">${desc}${recurBadge}</div>
-        <div class="exp-row-meta">${getCatLabel(exp.category)}${exp.paymentMethod ? ' · '+exp.paymentMethod : ''}${exp.paidBy ? ' · '+exp.paidBy : ''}</div>
+        <div class="exp-row-meta">${getCatLabel(exp.category)} ${getPayMethodBadge(exp.paymentMethod)}${exp.paidBy ? ' · '+exp.paidBy : ''}</div>
       </div>
       <div class="exp-row-right">
         <div class="exp-row-amount">${fmtINR(exp.amount)}</div>
         <div class="exp-row-date">${exp.date || ''}</div>
+        <button class="action-btn del exp-del-btn" onclick="event.stopPropagation();deleteExpense('${exp.id}')" title="Delete expense">✕</button>
       </div>
       <div class="exp-swipe-del" onclick="deleteExpense('${exp.id}')">🗑<br>Delete</div>
     `;
@@ -4555,8 +4949,11 @@ function renderGoldTable(owner) {
       <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted)">${rate>0?fmtINR(rate)+'<span style="font-size:9px">/g</span>':'—'}</td>
       <td style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:${inNW?'var(--gold)':'var(--text-muted)'}">${rate>0?fmtINR(val):'—'}</td>
       <td class="gold-nw-cb-cell" style="text-align:center">
-        <input type="checkbox" class="gold-nw-cb" ${inNW?'checked':''} title="${inNW?'In Net Worth':'Gold module only'}"
-          onchange="toggleGoldNW('${owner}','${item.id}',this.checked)" />
+        <label class="gold-nw-label" title="Toggle: include this item in Net Worth calculation">
+          <input type="checkbox" class="gold-nw-cb" ${inNW?'checked':''}
+            onchange="toggleGoldNW('${owner}','${item.id}',this.checked)" />
+          <span class="gold-nw-text">${inNW?'In NW':'Excl.'}</span>
+        </label>
       </td>
       <td><button class="action-btn del" onclick="deleteGoldRow('${owner}','${item.id}')">✕</button></td>
     `;
@@ -5026,6 +5423,7 @@ function renderAdminPanel() {
     const isSelf   = u.id === currentUserId;
     const adminBadge = u.isAdmin ? '<span class="admin-badge-admin">Admin</span>' : '';
     const selfNote   = isSelf ? '<span style="font-size:10px;color:var(--text-muted)">(you)</span>' : '';
+    const viewBtn    = `<button class="admin-action-btn view" onclick="openFundManager('${u.id}')">View Data</button>`;
     const resetBtn   = !isSelf
       ? `<button class="admin-action-btn reset" onclick="openAdminReset('${u.id}')">Reset PIN</button>`
       : '';
@@ -5039,7 +5437,7 @@ function renderAdminPanel() {
           <div class="admin-user-name">${u.userId} ${adminBadge} ${selfNote}</div>
           <div class="admin-user-meta">Joined: ${created} &nbsp;·&nbsp; ID: ${u.id.slice(0,10)}…</div>
         </div>
-        <div class="admin-user-actions">${resetBtn}${deleteBtn}</div>
+        <div class="admin-user-actions">${viewBtn}${resetBtn}${deleteBtn}</div>
       </div>`;
   }).join('');
 }
@@ -5141,6 +5539,214 @@ async function arSubmit() {
 }
 
 init();
+
+// ════════════════════════════════════════════
+// FUND MANAGER VIEW
+// ════════════════════════════════════════════
+
+function fmOverlayClick(e) {
+  if (e.target === document.getElementById('fm-overlay')) closeFundManager();
+}
+function closeFundManager() {
+  document.getElementById('fm-overlay').classList.remove('open');
+}
+
+function openFundManager(targetUserId) {
+  if (!isCurrentUserAdmin()) return;
+  const users  = loadUsers();
+  const target = users.find(u => u.id === targetUserId);
+  if (!target) return;
+
+  // Load target user's data from their localStorage key
+  let tData;
+  try {
+    const raw = localStorage.getItem(`st_data_${targetUserId}`);
+    tData = raw ? Object.assign(blankData(), JSON.parse(raw)) : blankData();
+  } catch(e) { tData = blankData(); }
+
+  // Ensure sub-objects
+  if (!tData.investments || typeof tData.investments !== 'object') tData.investments = {};
+  if (!tData.goldMe)  tData.goldMe  = { items: [] };
+  if (!tData.goldHer) tData.goldHer = { items: [] };
+  if (!Array.isArray(tData.goldMe.items))  tData.goldMe.items  = [];
+  if (!Array.isArray(tData.goldHer.items)) tData.goldHer.items = [];
+
+  // Header
+  const created = target.createdAt
+    ? new Date(target.createdAt).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })
+    : 'Unknown';
+  const av = document.getElementById('fm-avatar');
+  av.style.background = target.color || '#7C6FFF';
+  av.textContent = getUserInitials(target.userId);
+  document.getElementById('fm-username').textContent = target.userId + (target.isAdmin ? ' ⚙' : '');
+  document.getElementById('fm-usermeta').textContent = `Joined: ${created}  ·  Fund Manager View`;
+
+  // Render body
+  document.getElementById('fm-body').innerHTML = buildFMBody(tData);
+
+  document.getElementById('fm-overlay').classList.add('open');
+}
+
+function buildFMBody(d) {
+  const rate    = d.goldRate || 0;
+  const fmt     = v => fmtINR(v || 0);
+  const fmtNum  = v => `${((v||0)/100).toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+
+  // ── Compute Net Worth ──
+  const bankBal  = (d.accounts||[]).filter(a=>a.type==='bank').reduce((s,a)=>s+(a.balance||0),0);
+  const recvBal  = (d.accounts||[]).filter(a=>a.type==='recv').reduce((s,a)=>s+(a.balance||0),0);
+  const cash     = (d.cashInHand||0) + (d.cashOverseas||0);
+  const pf       = d.investments.PF  || 0;
+  const mf       = d.investments.VL  || 0;
+  const gra      = d.investments.Gra || 0;
+  const customInv = Object.entries(d.investments)
+    .filter(([k]) => !['PF','VL','Gra','Gold'].includes(k))
+    .reduce((s,[,v]) => s+(v||0), 0);
+
+  // Gold — only NW-checked items
+  const goldNWWeight = [...(d.goldMe.items||[]), ...(d.goldHer.items||[])]
+    .filter(r => r.inNetWorth !== false)
+    .reduce((s,r) => s + (parseFloat(r.weight)||0), 0);
+  const goldJewVal = Math.round(goldNWWeight * rate);
+  const goldVal    = rate > 0 ? (goldJewVal + (d.goldReserve||0)) : (d.investments.Gold||0);
+
+  const manualAssets = (d.assets||[]).reduce((s,a)=>s+(a.value||0),0);
+  const totalAssets  = bankBal + recvBal + cash + pf + mf + gra + customInv + goldVal + manualAssets;
+  const billsTotal   = (d.bills||[]).reduce((s,b)=>s+(b.amount||0),0);
+  const liabTotal    = (d.liabilities||[]).reduce((s,l)=>s+(l.outstanding||0),0);
+  const totalLiab    = billsTotal + liabTotal;
+  const netWorth     = totalAssets - totalLiab;
+
+  const sal          = d.salary || {};
+  const monthly      = sal.monthly || 0;
+  const monthlyExp   = sal.monthlyExpense || sal.toRunDenominator || 0;
+  const nwRatio      = monthly > 0 ? netWorth / monthly : 0;
+  const monthsToRun  = monthlyExp > 0 ? netWorth / monthlyExp : 0;
+
+  let html = '';
+
+  // ── Net Worth Hero ──
+  const nwColor = netWorth >= 0 ? 'var(--green)' : 'var(--red)';
+  html += `
+    <div class="fm-nw-hero">
+      <div>
+        <div class="fm-nw-val" style="color:${nwColor}">${fmt(netWorth)}</div>
+        <div class="fm-nw-label">Net Worth</div>
+      </div>
+      <div>
+        <div class="fm-nw-val" style="color:var(--green)">${fmt(totalAssets)}</div>
+        <div class="fm-nw-label">Total Assets</div>
+      </div>
+      <div>
+        <div class="fm-nw-val" style="color:var(--red)">${fmt(totalLiab)}</div>
+        <div class="fm-nw-label">Total Liabilities</div>
+      </div>
+    </div>`;
+
+  // ── Salary Metrics ──
+  html += `<div class="fm-section">
+    <div class="fm-section-title">Salary Metrics</div>
+    ${fmRow('Monthly Salary',  fmt(monthly),                  '')}
+    ${fmRow('Monthly Expense', fmt(monthlyExp),               '')}
+    ${fmRow('NW Ratio',        nwRatio.toFixed(2)+'x',        'accent')}
+    ${fmRow('Months to Run',   monthsToRun.toFixed(1)+' mo',  monthsToRun >= 6 ? 'green' : 'red')}
+  </div>`;
+
+  // ── Bank Accounts ──
+  const banks = (d.accounts||[]).filter(a=>a.type==='bank');
+  const recvs = (d.accounts||[]).filter(a=>a.type==='recv');
+  html += `<div class="fm-section">
+    <div class="fm-section-title">Bank Accounts — ${fmt(bankBal)}</div>
+    ${banks.length ? banks.map(a => fmRow(a.name, fmt(a.balance||0), 'green')).join('') : fmEmpty('No bank accounts')}
+  </div>`;
+
+  if (recvs.length) {
+    html += `<div class="fm-section">
+      <div class="fm-section-title">Receivables — ${fmt(recvBal)}</div>
+      ${recvs.map(a => fmRow(a.name, fmt(a.balance||0), 'accent')).join('')}
+    </div>`;
+  }
+
+  // ── Cash ──
+  html += `<div class="fm-section">
+    <div class="fm-section-title">Cash — ${fmt(cash)}</div>
+    ${fmRow('In Hand',  fmt(d.cashInHand||0),  '')}
+    ${fmRow('Overseas', fmt(d.cashOverseas||0), '')}
+  </div>`;
+
+  // ── Investments ──
+  const invEntries = Object.entries(d.investments).filter(([,v]) => (v||0) > 0);
+  if (invEntries.length) {
+    const invTotal = invEntries.reduce((s,[,v])=>s+(v||0),0);
+    html += `<div class="fm-section">
+      <div class="fm-section-title">Investments — ${fmt(invTotal)}</div>
+      ${invEntries.map(([k,v]) => fmRow(k, fmt(v||0), 'accent')).join('')}
+    </div>`;
+  }
+
+  // ── Gold Module ──
+  const allGoldItems = [...(d.goldMe.items||[]).map(i=>({...i,owner:'Me'})), ...(d.goldHer.items||[]).map(i=>({...i,owner:'Her'}))];
+  const totalGoldWt  = allGoldItems.reduce((s,r)=>s+(parseFloat(r.weight)||0),0);
+  const totalGoldVal = Math.round(totalGoldWt * rate) + (d.goldReserve||0);
+  if (allGoldItems.length || (d.goldReserve||0) > 0) {
+    html += `<div class="fm-section">
+      <div class="fm-section-title">Gold — ${totalGoldWt.toFixed(1)}g · ${fmt(totalGoldVal)}</div>
+      ${fmRow('Gold Rate', rate > 0 ? fmt(rate)+'/g' : '—', 'gold')}
+      ${fmRow('Reserve / Coins', fmt(d.goldReserve||0), 'gold')}
+      ${allGoldItems.length ? allGoldItems.map(r => {
+          const w = parseFloat(r.weight)||0;
+          const v = Math.round(w * rate);
+          const nwTag = r.inNetWorth === false ? ' <span style="font-size:9px;color:var(--text-muted)">(excl. NW)</span>' : '';
+          return fmRow(`[${r.owner}] ${r.desc||'Item'}${nwTag}`, `${w.toFixed(1)}g${rate>0?' · '+fmt(v):''}`, 'gold');
+        }).join('') : fmEmpty('No gold items')}
+    </div>`;
+  }
+
+  // ── Bills ──
+  if ((d.bills||[]).length) {
+    html += `<div class="fm-section">
+      <div class="fm-section-title">Bills Due — ${fmt(billsTotal)}</div>
+      ${d.bills.map(b => fmRow(b.name + (b.dueDate ? ` <span style="font-size:10px;color:var(--text-muted)">(${b.dueDate})</span>` : ''), fmt(b.amount||0), 'red')).join('')}
+    </div>`;
+  }
+
+  // ── Liabilities ──
+  if ((d.liabilities||[]).length) {
+    html += `<div class="fm-section">
+      <div class="fm-section-title">Liabilities — ${fmt(liabTotal)}</div>
+      ${d.liabilities.map(l => fmRow(
+        `${l.name} <span style="font-size:10px;color:var(--text-muted)">(${LIAB_CAT_LABEL[l.category]||l.category||''})</span>`,
+        fmt(l.outstanding||0), 'red'
+      )).join('')}
+    </div>`;
+  }
+
+  // ── Manual Assets ──
+  if ((d.assets||[]).length) {
+    html += `<div class="fm-section">
+      <div class="fm-section-title">Other Assets — ${fmt(manualAssets)}</div>
+      ${d.assets.map(a => fmRow(a.name + (a.category ? ` <span style="font-size:10px;color:var(--text-muted)">(${ASSET_CAT_LABEL[a.category]||a.category})</span>` : ''), fmt(a.value||0), 'green')).join('')}
+    </div>`;
+  }
+
+  // ── Net Worth History ──
+  if ((d.netWorthHistory||[]).length) {
+    const hist = [...d.netWorthHistory].reverse().slice(0,6);
+    html += `<div class="fm-section">
+      <div class="fm-section-title">Net Worth History (last ${hist.length})</div>
+      ${hist.map(h => fmRow(h.date || '—', fmt(h.netWorth||0), (h.netWorth||0)>=0?'green':'red')).join('')}
+    </div>`;
+  }
+
+  return html;
+}
+
+function fmRow(label, val, colorClass) {
+  return `<div class="fm-row"><span class="fm-row-label">${label}</span><span class="fm-row-val ${colorClass||''}">${val}</span></div>`;
+}
+function fmEmpty(msg) {
+  return `<div class="fm-empty">${msg}</div>`;
+}
 </script>
 
 <!-- ══════════════════════════════════════════ -->
@@ -5202,6 +5808,25 @@ init();
       <button class="pin-key pin-ok" onclick="arSubmit()">OK</button>
     </div>
     <button class="login-link-btn" onclick="closeAdminReset()" style="margin-top:12px;">Cancel</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- FUND MANAGER VIEW (Admin only)            -->
+<!-- ══════════════════════════════════════════ -->
+<div id="fm-overlay" onclick="fmOverlayClick(event)">
+  <div class="fm-box">
+    <div class="fm-header">
+      <div class="fm-user-info">
+        <div class="fm-avatar" id="fm-avatar"></div>
+        <div>
+          <div class="fm-username" id="fm-username"></div>
+          <div class="fm-usermeta" id="fm-usermeta"></div>
+        </div>
+      </div>
+      <button class="fm-close" onclick="closeFundManager()">✕</button>
+    </div>
+    <div class="fm-body" id="fm-body"></div>
   </div>
 </div>
 
